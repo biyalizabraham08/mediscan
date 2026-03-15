@@ -70,7 +70,24 @@ export async function sendEmergencyAlertEmail(
             message: customMessage || defaultMessage,
             location: location || 'Not provided',
         });
+        
+        // SMS Preparation (Future Integration)
+        // Structured for Twilio/Firebase: await sendEmergencySMS(phone, patientName, location);
     } catch (error) {
         void error; // silently fail — alert is best-effort
     }
-}
+}
+
+/**
+ * [PREPARATION] Stub for future SMS emergency alerts.
+ * To be integrated with Twilio, Firebase Cloud Messaging, or similar.
+ */
+export async function sendEmergencySMS(
+    phone: string,
+    patientName: string,
+    location?: string
+) {
+    const message = `Emergency Alert: ${patientName}'s MediScan profile was accessed. ${location ? `Location: ${location}` : ''}`;
+    // Integration point for SMS provider (e.g., Twilio)
+    return { success: true, provider: 'stub', content: message };
+}

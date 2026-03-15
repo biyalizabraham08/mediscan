@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Phone, AlertTriangle, Shield, Loader, Pill, Activity, Info, CheckCircle2, MapPin, Eye, EyeOff } from 'lucide-react';
-import { getEmergencyData } from '../lib/mockData';
+import { getEmergencyData, logAccess } from '../lib/mockData';
 import { sendEmergencyAlertEmail } from '../utils/email';
 import type { EmergencyFullData, Allergy, Medication, Condition } from '../types';
 
@@ -95,6 +95,9 @@ export default function EmergencyPage() {
                         undefined,
                         location || 'Detecting...'
                     );
+                    
+                    // Record that an alert was sent
+                    logAccess(userId, 'emergency_alert_sent', 'public').catch(() => {});
                 }
             }
             setLoading(false);
@@ -243,6 +246,7 @@ export default function EmergencyPage() {
                                 <div>
                                     <p style={{ color: '#fff', fontWeight: 900, fontSize: '1.25rem' }}>{data.primaryEmergencyContact.name}</p>
                                     <p style={{ color: '#aaa', fontSize: '1rem' }}>{data.primaryEmergencyContact.relationship} • Emergency Contact</p>
+                                    <p style={{ color: '#4CAF50', fontSize: '0.875rem', fontWeight: 600, marginTop: 4 }}>{data.primaryEmergencyContact.phone} {data.primaryEmergencyContact.email ? `• ${data.primaryEmergencyContact.email}` : ''}</p>
                                 </div>
                             </div>
                             <a
