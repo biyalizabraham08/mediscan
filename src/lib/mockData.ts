@@ -350,14 +350,30 @@ async function getApproxLocation(): Promise<string | undefined> {
 export async function logAccess(userId: string, accessorType: string, tier: 'public' | 'extended'): Promise<void> {
     const location = await getApproxLocation();
 
-    const { error } = await supabase.from('access_logs').insert({
+    // Prepare data
+    const insertData: any = {
         user_id: userId,
         accessor_type: accessorType,
         access_tier: tier,
+    };
+
+    // Attempt insert with location
+    const { error: firstError } = await supabase.from('access_logs').insert({
+        ...insertData,
         ...(location ? { location } : {}),
     });
-    if (error) {
-        console.error("Supabase LogAccess Error:", error.message, error.code, error.details);
+
+    // If it fails because of missing column, retry without location
+    if (firstError?.message?.includes('location')) {
+        const { error: secondError } = await supabase.from('access_logs').insert(insertData);
+        if (secondError) {
+            console.error("Supabase LogAccess Final Error:", secondError.message);
+        }
+        return;
+    }
+
+    if (firstError) {
+        console.error("Supabase LogAccess Error:", firstError.message);
     }
 }
 
