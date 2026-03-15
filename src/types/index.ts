@@ -54,7 +54,6 @@ export interface MedicalProfile {
   emergencyContacts: EmergencyContact[];
   // Settings
   emergencyMode: boolean; // true = full info shown on QR scan
-  accidentDetectionEnabled: boolean; // true = motion sensors monitored
   // Meta
   createdAt: string;
   updatedAt: string;

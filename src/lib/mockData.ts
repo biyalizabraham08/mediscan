@@ -150,21 +150,12 @@ export async function saveProfile(profile: MedicalProfile): Promise<{ success: b
         medications: profile.medications,
         emergency_contacts: profile.emergencyContacts,
         emergency_mode: profile.emergencyMode ?? true,
-        accident_detection_enabled: profile.accidentDetectionEnabled ?? false,
         updated_at: new Date().toISOString()
     };
 
     const { error: firstError } = await supabase.from('profiles').upsert(data);
 
-    // If missing accident_detection_enabled column, retry without it
-    if (firstError?.message?.includes('accident_detection_enabled')) {
-        console.warn("Supabase: accident_detection_enabled column missing. Retrying without it.");
-        delete data.accident_detection_enabled;
-        const { error: secondError } = await supabase.from('profiles').upsert(data);
-        if (secondError) return { success: false, message: secondError.message };
-        return { success: true, message: 'Profile saved (without accident detection setting).' };
-    }
-
+    // If missing columns, retry without them
     if (firstError) {
         console.error("Supabase SaveProfile Error:", firstError.message);
         return { success: false, message: firstError.message };
@@ -194,7 +185,6 @@ export async function getProfile(userId: string): Promise<MedicalProfile | null>
         medications: profile.medications,
         emergencyContacts: profile.emergency_contacts,
         emergencyMode: profile.emergency_mode !== false, // default true
-        accidentDetectionEnabled: !!profile.accident_detection_enabled,
         createdAt: profile.created_at,
         updatedAt: profile.updated_at,
     };
