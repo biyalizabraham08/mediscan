@@ -51,6 +51,8 @@ export interface MedicalProfile {
   conditions: Condition[];
   medications: Medication[];
   emergencyContacts: EmergencyContact[];
+  // Settings
+  emergencyMode: boolean; // true = full info shown on QR scan
   // Meta
   createdAt: string;
   updatedAt: string;
@@ -77,9 +79,28 @@ export interface ExtendedEmergencyInfo extends PublicEmergencyInfo {
 export interface AccessLog {
   id: string;
   accessedAt: string;
-  accessorType: string; // 'emergency_scan' | 'doctor_access'
+  accessorType: string; // 'emergency_scan' | 'doctor_access' | 'simulated_accident'
   accessTier: AccessTier;
   location?: string;
+}
+
+export interface EmergencyPublicData {
+  fullName: string;
+  age: number;
+  bloodGroup: BloodGroup | '';
+  severeAllergies: Allergy[];
+  primaryEmergencyContact: EmergencyContact | null;
+  emergencyMode: boolean;
+}
+
+export interface EmergencyFullData extends EmergencyPublicData {
+  dateOfBirth: string;
+  height: string;
+  weight: string;
+  allAllergies: Allergy[];
+  conditions: Condition[];
+  medications: Medication[];
+  allEmergencyContacts: EmergencyContact[];
 }
 
 export interface AuthState {

@@ -5,7 +5,6 @@ export async function sendOTPEmail(
     otp: string,
     expiresAtISO: string
 ) {
-    // Safely access env
     const serviceId = import.meta.env?.VITE_EMAILJS_SERVICE_ID;
     const templateId = import.meta.env?.VITE_EMAILJS_TEMPLATE_ID;
     const publicKey = import.meta.env?.VITE_EMAILJS_PUBLIC_KEY;
@@ -17,14 +16,11 @@ export async function sendOTPEmail(
         hour12: false,
     });
 
-    if (!serviceId || !templateId || !publicKey) {
-        return;
-    }
+    if (!serviceId || !templateId || !publicKey) return;
 
     try {
         emailjs.init(publicKey);
-
-        const templateParams = {
+        await emailjs.send(serviceId, templateId, {
             to_email: email,
             to_name: email,
             user_email: email,
@@ -32,12 +28,46 @@ export async function sendOTPEmail(
             otp_code: otp,
             expiry_time: formattedExpiry,
             message: `Your MediScan OTP is ${otp}. Valid until ${formattedExpiry}.`
-        };
-
-        await emailjs.send(serviceId, templateId, templateParams);
-
+        });
     } catch (error) {
-        // Silent fail — OTP send failure is handled by the caller
         void error;
     }
 }
+
+/**
+ * Sends an emergency alert email to an emergency contact when a patient's QR
+ * code is scanned. Requires VITE_EMAILJS_ALERT_TEMPLATE_ID in .env.
+ * Template variables: to_email, to_name, patient_name, access_time, message
+ */
+export async function sendEmergencyAlertEmail(
+    contactEmail: string,
+    contactName: string,
+    patientName: string,
+    customMessage?: string
+) {
+    const serviceId = import.meta.env?.VITE_EMAILJS_SERVICE_ID;
+    const alertTemplateId = import.meta.env?.VITE_EMAILJS_ALERT_TEMPLATE_ID;
+    const publicKey = import.meta.env?.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !alertTemplateId || !publicKey) return; // silently skip if not configured
+
+    const accessTime = new Date().toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+    });
+
+    const defaultMessage = `URGENT: ${patientName}'s emergency medical profile was just accessed via their MediScan QR code at ${accessTime}. They may need immediate assistance. Please check on them right away.`;
+
+    try {
+        emailjs.init(publicKey);
+        await emailjs.send(serviceId, alertTemplateId, {
+            to_email: contactEmail,
+            to_name: contactName,
+            patient_name: patientName,
+            access_time: accessTime,
+            message: customMessage || defaultMessage,
+        });
+    } catch (error) {
+        void error; // silently fail — alert is best-effort
+    }
+}

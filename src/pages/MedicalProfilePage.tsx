@@ -39,6 +39,7 @@ const EMPTY_PROFILE: Omit<MedicalProfile, 'userId' | 'createdAt' | 'updatedAt'> 
     fullName: '', dateOfBirth: '', bloodGroup: '',
     height: '', weight: '',
     allergies: [], conditions: [], medications: [], emergencyContacts: [],
+    emergencyMode: true,
 };
 
 export default function MedicalProfilePage() {
@@ -62,7 +63,8 @@ export default function MedicalProfilePage() {
                     allergies: p.allergies,
                     conditions: p.conditions,
                     medications: p.medications,
-                    emergencyContacts: p.emergencyContacts
+                    emergencyContacts: p.emergencyContacts,
+                    emergencyMode: p.emergencyMode !== false,
                 });
             } else {
                 setProfile(p => ({ ...p, email: authState.user?.email || '' }));
