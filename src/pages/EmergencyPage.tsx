@@ -168,28 +168,29 @@ export default function EmergencyPage() {
                 <div style={{ marginBottom: 24 }}>
                     {criticalAllergies.length > 0 ? (
                         <div style={{
-                            background: 'rgba(185,28,28,0.1)', border: '3px solid #B91C1C',
-                            borderRadius: 16, padding: '20px', boxShadow: '0 4px 30px rgba(185,28,28,0.2)'
+                            background: '#B91C1C', border: '2px solid #fff',
+                            borderRadius: 16, padding: '24px', boxShadow: '0 8px 30px rgba(185,28,28,0.4)',
+                            color: '#fff'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                                <AlertTriangle size={28} color="#B91C1C" />
-                                <p style={{ color: '#B91C1C', fontWeight: 900, fontSize: '1.125rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                <AlertTriangle size={32} color="#fff" />
+                                <p style={{ color: '#fff', fontWeight: 900, fontSize: '1.25rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                                     CRITICAL ALLERGY ALERT
                                 </p>
                             </div>
                             {criticalAllergies.map((a: Allergy) => (
                                 <div key={a.id} style={{ display: 'flex', gap: 14, marginBottom: 12, paddingLeft: 4 }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#B91C1C', marginTop: 10, flexShrink: 0 }} />
+                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#fff', marginTop: 10, flexShrink: 0 }} />
                                     <div>
-                                        <p style={{ fontWeight: 900, fontSize: '1.5rem', color: '#fff', lineHeight: 1.2 }}>{a.name}</p>
-                                        {a.reaction && <p style={{ color: '#ffcdd2', fontSize: '1rem', marginTop: 4, fontWeight: 500 }}>Reaction: {a.reaction}</p>}
+                                        <p style={{ fontWeight: 900, fontSize: '1.75rem', color: '#fff', lineHeight: 1.1 }}>{a.name}</p>
+                                        {a.reaction && <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.0625rem', marginTop: 6, fontWeight: 600 }}>Reaction: {a.reaction}</p>}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : severeAllergies.length > 0 ? (
                         <div style={{
-                            background: 'rgba(255,152,0,.15)', border: '2px solid #FF9800',
+                            background: 'rgba(255,152,0,0.2)', border: '2px solid #FF9800',
                             borderRadius: 16, padding: '20px'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
@@ -207,11 +208,11 @@ export default function EmergencyPage() {
                         </div>
                     ) : (
                         <div style={{
-                            background: 'rgba(46,125,50,0.1)', border: '1.5px solid rgba(46,125,50,0.3)',
+                            background: 'rgba(255,255,255,0.03)', border: '1.5px solid rgba(255,255,255,0.1)',
                             borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12
                         }}>
-                            <CheckCircle2 size={24} color="#4CAF50" />
-                            <p style={{ color: '#81C784', fontWeight: 700, fontSize: '1.125rem' }}>No known life-threatening allergies.</p>
+                            <CheckCircle2 size={24} color="var(--blue)" />
+                            <p style={{ color: '#aaa', fontWeight: 700, fontSize: '1.125rem' }}>No known allergies.</p>
                         </div>
                     )}
                 </div>
@@ -274,55 +275,7 @@ export default function EmergencyPage() {
                     </div>
                 )}
 
-                {/* ── 4. AI MEDICAL SUMMARY (Quick Context) ── */}
-                {!hospitalMode && (
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(33,150,243,.1) 0%, rgba(33,150,243,0.03) 100%)',
-                        border: '2px solid rgba(33,150,243,.3)',
-                        borderRadius: 20, padding: '24px', marginBottom: 40
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(33,150,243,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Info size={18} color="#2196F3" />
-                            </div>
-                            <p style={{ color: '#2196F3', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                                Triage Summary
-                            </p>
-                        </div>
-                        <p style={{ color: '#fff', fontSize: '1.25rem', lineHeight: 1.5, fontWeight: 600 }}>
-                            "{aiSummary}"
-                        </p>
-                    </div>
-                )}
-
-                {/* Location Detection Banner */}
-                {location && (
-                    <div style={{
-                        background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '12px 20px',
-                        display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40, border: '1px solid rgba(255,255,255,0.1)'
-                    }}>
-                        <MapPin size={18} color="#aaa" />
-                        <p style={{ color: '#aaa', fontSize: '0.9375rem', fontWeight: 500 }}>
-                            Detected Location: <span style={{ color: '#fff' }}>{location}</span>
-                        </p>
-                    </div>
-                )}
-
-                {/* ── MODE NOTICE ── */}
-                {!isFullMode && !hospitalMode && (
-                    <div style={{
-                        background: 'rgba(33,150,243,.12)', border: '1.5px solid rgba(33,150,243,0.3)',
-                        borderRadius: 16, padding: '18px 24px', marginBottom: 40,
-                        display: 'flex', gap: 16, alignItems: 'center'
-                    }}>
-                        <Shield size={24} color="#2196F3" style={{ flexShrink: 0 }} />
-                        <p style={{ color: '#90CAF9', fontSize: '1.0625rem', lineHeight: 1.5, fontWeight: 500 }}>
-                            <strong>Limited Visibility:</strong> Only public emergency data is shown. Full records are locked by the patient.
-                        </p>
-                    </div>
-                )}
-
-                {/* ── 5 & 6. MEDICATIONS & CONDITIONS (Detailed Clinical Data) ── */}
+                {/* ── 4 & 5. MEDICATIONS & CONDITIONS (Detailed Clinical Data) ── */}
                 {isFullMode && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 40, marginBottom: 48 }}>
                         {/* Medications */}
@@ -377,10 +330,58 @@ export default function EmergencyPage() {
                                 </div>
                             ) : (
                                 <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1.5px solid rgba(255,255,255,0.05)' }}>
-                                    <p style={{ color: '#777', fontSize: '1.0625rem', fontWeight: 500 }}>No known medical conditions reported.</p>
+                                    <p style={{ color: '#777', fontSize: '1.0625rem', fontWeight: 500 }}>No known medical conditions.</p>
                                 </div>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {/* ── 6. AI MEDICAL SUMMARY (Quick Context) ── */}
+                {!hospitalMode && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(33,150,243,.1) 0%, rgba(33,150,243,0.03) 100%)',
+                        border: '2px solid rgba(33,150,243,.3)',
+                        borderRadius: 20, padding: '24px', marginBottom: 40
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(33,150,243,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Info size={18} color="#2196F3" />
+                            </div>
+                            <p style={{ color: '#2196F3', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                                Triage Summary
+                            </p>
+                        </div>
+                        <p style={{ color: '#fff', fontSize: '1.25rem', lineHeight: 1.5, fontWeight: 600 }}>
+                            "{aiSummary}"
+                        </p>
+                    </div>
+                )}
+
+                {/* Location Detection Banner */}
+                {location && (
+                    <div style={{
+                        background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '12px 20px',
+                        display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40, border: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                        <MapPin size={18} color="#aaa" />
+                        <p style={{ color: '#aaa', fontSize: '0.9375rem', fontWeight: 500 }}>
+                            Detected Location: <span style={{ color: '#fff' }}>{location}</span>
+                        </p>
+                    </div>
+                )}
+
+                {/* ── MODE NOTICE ── */}
+                {!isFullMode && !hospitalMode && (
+                    <div style={{
+                        background: 'rgba(33,150,243,.12)', border: '1.5px solid rgba(33,150,243,0.3)',
+                        borderRadius: 16, padding: '18px 24px', marginBottom: 40,
+                        display: 'flex', gap: 16, alignItems: 'center'
+                    }}>
+                        <Shield size={24} color="#2196F3" style={{ flexShrink: 0 }} />
+                        <p style={{ color: '#90CAF9', fontSize: '1.0625rem', lineHeight: 1.5, fontWeight: 500 }}>
+                            <strong>Limited Visibility:</strong> Only public emergency data is shown. Full records are locked by the patient.
+                        </p>
                     </div>
                 )}
 
