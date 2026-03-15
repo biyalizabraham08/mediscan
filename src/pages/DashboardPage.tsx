@@ -6,10 +6,11 @@ import {
     Shield, ShieldOff, Siren, MapPin, Bell, ExternalLink, Zap, Smartphone
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getProfile, getAccessLogs, setEmergencyMode, logAccess } from '../lib/mockData';
-import { sendEmergencyAlertEmail } from '../utils/email';
+import { getProfile, getAccessLogs, setEmergencyMode, logAccess, saveProfile } from '../lib/mockData';
+import { sendAccidentAlertEmail } from '../utils/email';
 import { useAuth } from '../lib/auth';
 import type { MedicalProfile, AccessLog } from '../types';
+import AccidentCountdown from '../components/AccidentCountdown';
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
@@ -67,9 +68,9 @@ export default function DashboardPage() {
     const [togglingMode, setTogglingMode] = useState(false);
 
     const [accidentDetectionEnabled, setAccidentDetectionEnabled] = useState(false);
-    const [simulatingAccident, setSimulatingAccident] = useState(false);
+    const [showCountdown, setShowCountdown] = useState(false);
     const [accidentAlert, setAccidentAlert] = useState('');
-    const accidentTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const cooldownRef = useRef<number>(0);
 
     const emergencyUrl = `${window.location.origin}/emergency/${userId}`;
 
@@ -84,50 +85,57 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (!accidentDetectionEnabled) return;
-        let lastAccel = 0;
-        const threshold = 25;
+        
+        let lastAccelTotal = 0;
+        const threshold = 28; // High threshold for crash/impact
 
         const handler = (e: DeviceMotionEvent) => {
+            const now = Date.now();
+            if (now - cooldownRef.current < 120000) return; // 2 minute cooldown
+
             const acc = e.accelerationIncludingGravity;
             if (!acc) return;
+            
             const total = Math.sqrt((acc.x || 0) ** 2 + (acc.y || 0) ** 2 + (acc.z || 0) ** 2);
-            if (Math.abs(total - lastAccel) > threshold) {
-                triggerAccidentAlert('Motion detected!');
+            
+            // Look for sudden delta
+            if (Math.abs(total - lastAccelTotal) > threshold) {
+                setShowCountdown(true);
             }
-            lastAccel = total;
+            lastAccelTotal = total;
         };
 
         window.addEventListener('devicemotion', handler as EventListener);
         return () => window.removeEventListener('devicemotion', handler as EventListener);
     }, [accidentDetectionEnabled]);
 
-    async function triggerAccidentAlert(reason: string) {
-        if (simulatingAccident) return;
-        setSimulatingAccident(true);
-        setAccidentAlert(`🚨 ${reason} Emergency alert triggered!`);
+    async function handleAccidentConfirm() {
+        setShowCountdown(false);
+        setAccidentAlert('🚨 Emergency alert sent to your contact!');
+        cooldownRef.current = Date.now(); // Start cooldown
 
-        await logAccess(userId, 'simulated_accident', 'public');
+        await logAccess(userId, 'accident_detected', 'public');
 
         if (profile?.emergencyContacts?.[0] && profile.fullName) {
             const contact = profile.emergencyContacts[0];
-            const alertMsg = `🚨 URGENT: An accident or sudden impact was detected for ${profile.fullName}.\n\nDetection Method: ${reason}\nTime: ${new Date().toLocaleString()}\n\nPlease attempt to contact them or check their location immediately.`;
-            
-            await sendEmergencyAlertEmail(
-                contact.phone,
+            await sendAccidentAlertEmail(
+                contact.email || contact.phone,
                 contact.name,
-                profile.fullName,
-                alertMsg
+                profile.fullName
             );
         }
 
         const freshLogs = await getAccessLogs(userId);
         setLogs(freshLogs);
 
-        if (accidentTimeout.current) clearTimeout(accidentTimeout.current);
-        accidentTimeout.current = setTimeout(() => {
-            setSimulatingAccident(false);
-            setAccidentAlert('');
-        }, 8000);
+        setTimeout(() => setAccidentAlert(''), 8000);
+    }
+
+    async function toggleAccidentDetection(enabled: boolean) {
+        if (!profile) return;
+        setAccidentDetectionEnabled(enabled);
+        await saveProfile({ ...profile, accidentDetectionEnabled: enabled });
+        toast.success(`Accident detection ${enabled ? 'enabled' : 'disabled'}`);
     }
 
     async function handleEmergencyModeToggle(enabled: boolean) {
@@ -280,6 +288,13 @@ export default function DashboardPage() {
                 </div>
             )}
 
+            {showCountdown && (
+                <AccidentCountdown 
+                    onCancel={() => setShowCountdown(false)}
+                    onConfirm={handleAccidentConfirm}
+                />
+            )}
+
             <main className="container-lg" style={{ padding: '40px 24px 80px' }}>
                 
                 {/* ── Header Section ── */}
@@ -409,7 +424,7 @@ export default function DashboardPage() {
                                     <div style={{ width: 40, height: 40, borderRadius: 12, background: accidentDetectionEnabled ? 'rgba(255, 152, 0, 0.1)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Bell size={20} color={accidentDetectionEnabled ? '#FF9800' : 'var(--text-muted)'} />
                                     </div>
-                                    <Toggle checked={accidentDetectionEnabled} onChange={setAccidentDetectionEnabled} />
+                                    <Toggle checked={accidentDetectionEnabled} onChange={toggleAccidentDetection} />
                                 </div>
                                 <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Auto-Alert</h3>
                                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -431,12 +446,12 @@ export default function DashboardPage() {
                                         <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Trigger a mock emergency to verify your email alerts are working.</p>
                                     </div>
                                     <button 
-                                        onClick={() => triggerAccidentAlert('Manual test triggered by user.')}
-                                        disabled={simulatingAccident}
+                                        onClick={() => setShowCountdown(true)}
+                                        disabled={showCountdown}
                                         className="btn btn-secondary btn-sm"
                                         style={{ borderColor: '#FF9800', color: '#E65100' }}
                                     >
-                                        {simulatingAccident ? 'Alerting...' : 'Test Alert'}
+                                        {showCountdown ? 'Countdown Active' : 'Test Alert'}
                                     </button>
                                 </div>
                             </div>

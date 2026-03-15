@@ -88,6 +88,45 @@ export async function sendEmergencySMS(
     location?: string
 ) {
     const message = `Emergency Alert: ${patientName}'s MediScan profile was accessed. ${location ? `Location: ${location}` : ''}`;
+    void phone; // Reserved for future Twilio/Firebase integration
     // Integration point for SMS provider (e.g., Twilio)
     return { success: true, provider: 'stub', content: message };
+}
+
+/**
+ * Sends an accident alert email when a potential collision is detected.
+ */
+export async function sendAccidentAlertEmail(
+    contactEmail: string,
+    contactName: string,
+    patientName: string,
+    location?: string
+) {
+    const serviceId = import.meta.env?.VITE_EMAILJS_SERVICE_ID;
+    const alertTemplateId = import.meta.env?.VITE_EMAILJS_ALERT_TEMPLATE_ID;
+    const publicKey = import.meta.env?.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !alertTemplateId || !publicKey) return;
+
+    const accessTime = new Date().toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+    });
+
+    const locationNotice = location ? `\n\nApproximate Location: ${location}` : "";
+    const message = `URGENT: An accident may have been detected involving ${patientName}.\n\nThe MediScan accident detection system was triggered from their device at ${accessTime}.${locationNotice}\n\nPlease try contacting them immediately.`;
+
+    try {
+        emailjs.init(publicKey);
+        await emailjs.send(serviceId, alertTemplateId, {
+            to_email: contactEmail,
+            to_name: contactName,
+            patient_name: patientName,
+            access_time: accessTime,
+            message: message,
+            location: location || 'Detecting...'
+        });
+    } catch (error) {
+        void error;
+    }
 }

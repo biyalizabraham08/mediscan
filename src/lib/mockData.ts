@@ -150,6 +150,7 @@ export async function saveProfile(profile: MedicalProfile): Promise<{ success: b
         medications: profile.medications,
         emergency_contacts: profile.emergencyContacts,
         emergency_mode: profile.emergencyMode ?? true,
+        accident_detection_enabled: profile.accidentDetectionEnabled ?? false,
         updated_at: new Date().toISOString()
     });
 
@@ -179,6 +180,7 @@ export async function getProfile(userId: string): Promise<MedicalProfile | null>
         medications: profile.medications,
         emergencyContacts: profile.emergency_contacts,
         emergencyMode: profile.emergency_mode !== false, // default true
+        accidentDetectionEnabled: !!profile.accident_detection_enabled,
         createdAt: profile.created_at,
         updatedAt: profile.updated_at,
     };
