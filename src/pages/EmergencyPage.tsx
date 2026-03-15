@@ -88,13 +88,15 @@ export default function EmergencyPage() {
                 if (!alertSent.current && (res.data.primaryEmergencyContact?.email || res.data.primaryEmergencyContact?.phone)) {
                     alertSent.current = true;
                     
-                    sendEmergencyAlertEmail(
-                        res.data.primaryEmergencyContact.email || res.data.primaryEmergencyContact.phone,
-                        res.data.primaryEmergencyContact.name,
-                        res.data.fullName,
-                        undefined,
-                        location || 'Detecting...'
-                    );
+                    if (res.data.primaryEmergencyContact.email) {
+                        sendEmergencyAlertEmail(
+                            res.data.primaryEmergencyContact.email,
+                            res.data.primaryEmergencyContact.name,
+                            res.data.fullName,
+                            undefined,
+                            location
+                        ).catch(err => console.error("Email failed:", err));
+                    }
                     
                     // Record that an alert was sent
                     logAccess(userId, 'emergency_alert_sent', 'public').catch(() => {});

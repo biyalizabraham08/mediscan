@@ -50,6 +50,9 @@ export async function sendEmergencyAlertEmail(
     const alertTemplateId = import.meta.env?.VITE_EMAILJS_ALERT_TEMPLATE_ID;
     const publicKey = import.meta.env?.VITE_EMAILJS_PUBLIC_KEY;
 
+    // Validate email format to prevent 422 error
+    if (!contactEmail || !contactEmail.includes('@')) return; 
+
     if (!serviceId || !alertTemplateId || !publicKey) return; // silently skip if not configured
 
     const accessTime = new Date().toLocaleString("en-IN", {
@@ -105,6 +108,8 @@ export async function sendAccidentAlertEmail(
     const serviceId = import.meta.env?.VITE_EMAILJS_SERVICE_ID;
     const alertTemplateId = import.meta.env?.VITE_EMAILJS_ALERT_TEMPLATE_ID;
     const publicKey = import.meta.env?.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!contactEmail || !contactEmail.includes('@')) return;
 
     if (!serviceId || !alertTemplateId || !publicKey) return;
 

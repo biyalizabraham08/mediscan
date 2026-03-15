@@ -118,11 +118,13 @@ export default function DashboardPage() {
 
         if (profile?.emergencyContacts?.[0] && profile.fullName) {
             const contact = profile.emergencyContacts[0];
-            await sendAccidentAlertEmail(
-                contact.email || contact.phone,
-                contact.name,
-                profile.fullName
-            );
+            if (contact.email) {
+                await sendAccidentAlertEmail(
+                    contact.email,
+                    contact.name,
+                    profile.fullName
+                );
+            }
         }
 
         const freshLogs = await getAccessLogs(userId);
