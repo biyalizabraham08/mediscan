@@ -25,10 +25,10 @@ export default function LandingPage() {
             {/* ── Navbar ── */}
             <nav className="navbar">
                 <Link className="navbar-brand" to="/">
-                    <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
-                        <Activity size={20} color="white" />
+                    <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                        <Activity size={22} color="white" />
                     </div>
-                    <span>Medi<em>Scan</em></span>
+                    <span>Medi<span style={{ fontWeight: 800 }}>Scan</span></span>
                 </Link>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                     {authState.isAuthenticated ? (
@@ -267,10 +267,10 @@ export default function LandingPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 40 }}>
                         <div style={{ maxWidth: 280 }}>
                             <Link className="navbar-brand" to="/" style={{ marginBottom: 20 }}>
-                                <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
-                                    <Activity size={18} color="white" />
+                                <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                                    <Activity size={20} color="white" />
                                 </div>
-                                <span>Medi<em>Scan</em></span>
+                                <span>Medi<span style={{ fontWeight: 800 }}>Scan</span></span>
                             </Link>
                             <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
                                 Modern emergency medical identification system providing peace of mind to individuals and clarity to responders.

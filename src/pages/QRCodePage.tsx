@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
-import { Download, Share2, ArrowRight, Smartphone } from 'lucide-react';
+import { Download, Share2, ArrowRight, Smartphone, Activity } from 'lucide-react';
 import { getProfile } from '../lib/mockData';
 import { useAuth } from '../lib/auth';
 import toast from 'react-hot-toast';
@@ -97,11 +97,13 @@ export default function QRCodePage() {
     }
 
     return (
-        <div className="page" style={{ background: 'linear-gradient(160deg, #fff7f7 0%, #f8f9fc 100%)' }}>
+        <div className="page" style={{ background: 'radial-gradient(circle at top left, #f8f9fc 0%, #eef2ff 100%)' }}>
             <nav className="navbar">
                 <Link to="/" className="navbar-brand">
-                    <svg className="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#E53935" /><rect x="13" y="6" width="6" height="20" rx="2" fill="white" /><rect x="6" y="13" width="20" height="6" rx="2" fill="white" /></svg>
-                    <span>Medi<em>Scan</em></span>
+                    <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                        <Activity size={22} color="white" />
+                    </div>
+                    <span>Medi<span style={{ fontWeight: 800 }}>Scan</span></span>
                 </Link>
                 <Link to="/dashboard" className="btn btn-ghost btn-sm">Dashboard →</Link>
             </nav>
@@ -128,7 +130,7 @@ export default function QRCodePage() {
                                 fgColor="#0F172A"
                                 bgColor="#ffffff"
                                 imageSettings={{
-                                    src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#E53935"/><rect x="13" y="6" width="6" height="20" rx="2" fill="white"/><rect x="6" y="13" width="20" height="6" rx="2" fill="white"/></svg>'),
+                                    src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="0" width="24" height="24" rx="6" fill="#1e40af"/><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="white" stroke-width="2"/></svg>'),
                                     height: 32, width: 32, excavate: true,
                                 }}
                             />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Plus, Trash2, Save } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, Save, Activity } from 'lucide-react';
 import { getProfile, saveProfile } from '../lib/mockData';
 import { useAuth } from '../lib/auth';
 import toast from 'react-hot-toast';
@@ -136,8 +136,10 @@ export default function MedicalProfilePage() {
             {/* Navbar */}
             <nav className="navbar">
                 <Link to="/" className="navbar-brand">
-                    <svg className="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#E53935" /><rect x="13" y="6" width="6" height="20" rx="2" fill="white" /><rect x="6" y="13" width="20" height="6" rx="2" fill="white" /></svg>
-                    <span>Medi<em>Scan</em></span>
+                    <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                        <Activity size={22} color="white" />
+                    </div>
+                    <span>Medi<span style={{ fontWeight: 800 }}>Scan</span></span>
                 </Link>
                 <Link to="/dashboard" className="btn btn-ghost btn-sm">Dashboard</Link>
             </nav>

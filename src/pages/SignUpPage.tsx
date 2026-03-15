@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Activity } from 'lucide-react';
 import { registerUser } from '../lib/mockData';
 import toast from 'react-hot-toast';
 
@@ -37,7 +37,7 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="page-center" style={{ background: 'linear-gradient(160deg, #fff7f7 0%, #f8f9fc 100%)' }}>
+        <div className="page-center" style={{ background: 'linear-gradient(160deg, #f8f9fc 0%, #eef2ff 100%)' }}>
             <div className="container" style={{ maxWidth: 440 }}>
 
                 <div className="animate-in">
@@ -47,14 +47,12 @@ export default function SignUpPage() {
 
                     {/* Logo */}
                     <div style={{ textAlign: 'center', marginBottom: 28 }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                            <svg width="36" height="36" viewBox="0 0 32 32">
-                                <rect width="32" height="32" rx="8" fill="#E53935" />
-                                <rect x="13" y="6" width="6" height="20" rx="2" fill="white" />
-                                <rect x="6" y="13" width="20" height="6" rx="2" fill="white" />
-                            </svg>
-                            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-                                Medi<span style={{ color: 'var(--red)' }}>Scan</span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                            <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                                <Activity size={24} color="white" />
+                            </div>
+                            <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
+                                MediScan
                             </span>
                         </div>
                         <h2 style={{ marginBottom: 6 }}>Create your account</h2>
@@ -71,7 +69,7 @@ export default function SignUpPage() {
                                     value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })); }}
                                     autoFocus
                                 />
-                                {errors.name && <p style={{ color: 'var(--red)', fontSize: '0.8125rem' }}>{errors.name}</p>}
+                                {errors.name && <p style={{ color: 'var(--blue)', fontSize: '0.8125rem' }}>{errors.name}</p>}
                             </div>
 
                             <div className="form-group">
@@ -81,7 +79,7 @@ export default function SignUpPage() {
                                     type="email" placeholder="john@example.com"
                                     value={form.email} onChange={e => { setForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })); }}
                                 />
-                                {errors.email && <p style={{ color: 'var(--red)', fontSize: '0.8125rem' }}>{errors.email}</p>}
+                                {errors.email && <p style={{ color: 'var(--blue)', fontSize: '0.8125rem' }}>{errors.email}</p>}
                             </div>
 
                             <div className="form-group">
@@ -98,7 +96,7 @@ export default function SignUpPage() {
                                         {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
-                                {errors.password && <p style={{ color: 'var(--red)', fontSize: '0.8125rem' }}>{errors.password}</p>}
+                                {errors.password && <p style={{ color: 'var(--blue)', fontSize: '0.8125rem' }}>{errors.password}</p>}
                             </div>
 
                             <button type="submit" className="btn btn-primary btn-full btn-lg" style={{ marginTop: 4 }} disabled={loading}>
@@ -108,7 +106,7 @@ export default function SignUpPage() {
 
                         <p style={{ textAlign: 'center', marginTop: 20, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                             Already have an account?{' '}
-                            <Link to="/login" style={{ color: 'var(--red)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+                            <Link to="/login" style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
                         </p>
                     </div>
 

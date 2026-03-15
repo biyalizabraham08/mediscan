@@ -149,10 +149,10 @@ export default function DashboardPage() {
             {/* Navbar */}
             <nav className="navbar">
                 <Link to="/" className="navbar-brand">
-                    <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
-                        <Activity size={20} color="white" />
+                    <div style={{ background: 'var(--blue)', borderRadius: '10px', padding: '6px', display: 'flex', boxShadow: '0 4px 12px rgba(30, 64, 175, 0.2)' }}>
+                        <Activity size={22} color="white" />
                     </div>
-                    <span>Medi<em>Scan</em></span>
+                    <span>Medi<span style={{ fontWeight: 800 }}>Scan</span></span>
                 </Link>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                     <div className="badge badge-gray" style={{ background: 'white', border: '1.5px solid var(--border)' }}>

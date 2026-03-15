@@ -74,7 +74,7 @@ export default function DoctorAccessPage() {
     return (
         <div className="emergency-page" style={{ minHeight: '100vh' }}>
             {/* Header */}
-            <div style={{ background: '#1565C0', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ background: 'var(--blue)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12, boxShadow: 'var(--shadow)' }}>
                 <Link to={`/emergency/${userId}`} style={{ color: 'rgba(255,255,255,.7)', display: 'flex' }}>
                     <ArrowLeft size={20} />
                 </Link>
@@ -88,8 +88,8 @@ export default function DoctorAccessPage() {
                 {step === 'request' && (
                     <div className="animate-in">
                         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(21,101,192,.2)', border: '2px solid rgba(21,101,192,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                                <Shield size={28} color="#64B5F6" />
+                            <div style={{ width: 64, height: 64, borderRadius: '16px', background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 16px rgba(30,64,175,0.2)' }}>
+                                <Shield size={28} color="white" />
                             </div>
                             <h2 style={{ color: '#fff', marginBottom: 8 }}>Request Extended Access</h2>
                             <p style={{ color: '#888', fontSize: '0.9375rem', lineHeight: 1.65 }}>
@@ -132,7 +132,7 @@ export default function DoctorAccessPage() {
                                         key={idx}
                                         ref={el => { inputRefs.current[idx] = el; }}
                                         className={`otp-input ${val ? 'filled' : ''}`}
-                                        style={{ background: 'rgba(255,255,255,.08)', color: '#fff', borderColor: val ? '#1565C0' : 'rgba(255,255,255,.2)' }}
+                                        style={{ background: 'rgba(255,255,255,.08)', color: '#fff', borderColor: val ? 'var(--blue)' : 'rgba(255,255,255,.2)' }}
                                         type="text" inputMode="numeric" maxLength={1}
                                         value={val}
                                         onChange={e => handleOtpChange(idx, e.target.value)}
@@ -141,7 +141,7 @@ export default function DoctorAccessPage() {
                                 ))}
                             </div>
                             <button className="btn btn-full btn-lg" onClick={handleVerify} disabled={loading}
-                                style={{ background: '#1565C0', color: '#fff', boxShadow: '0 4px 14px rgba(21,101,192,.4)' }}>
+                                style={{ background: 'var(--blue)', color: '#fff', boxShadow: '0 4px 14px rgba(30,64,175,0.4)' }}>
                                 {loading ? <><Loader size={16} style={{ animation: 'spin 1s linear infinite' }} /> Verifying…</> : 'Verify & Access Records →'}
                             </button>
                         </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Mail, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Lock, Mail, Eye, EyeOff, Activity } from 'lucide-react';
 import { loginUser } from '../lib/mockData';
 import { useAuth } from '../lib/auth';
 import toast from 'react-hot-toast';
@@ -45,25 +45,25 @@ export default function LoginPage() {
     return (
         <div className="page" style={{
             minHeight: '100vh',
-            background: 'radial-gradient(circle at top left, #fff1f1 0%, #f8f9fc 40%, #eef2ff 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            overflow: 'hidden'
-        }}>
-            {/* Animated background blobs */}
-            <div style={{
-                position: 'absolute', top: '-10%', right: '-5%',
-                width: '40vw', height: '40vw', borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(229,57,53,0.08) 0%, transparent 70%)',
-                filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0
-            }} className="animate-pulse" />
-            <div style={{
-                position: 'absolute', bottom: '-10%', left: '-5%',
-                width: '35vw', height: '35vw', borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%)',
-                filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0
-            }} />
+    background: 'radial-gradient(circle at top left, #f8f9fc 0%, #eef2ff 100%)',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    overflow: 'hidden'
+}}>
+    {/* Animated background blobs */}
+    <div style={{
+        position: 'absolute', top: '-10%', right: '-5%',
+        width: '40vw', height: '40vw', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%)',
+        filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0
+    }} className="animate-pulse" />
+    <div style={{
+        position: 'absolute', bottom: '-10%', left: '-5%',
+        width: '35vw', height: '35vw', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(37,99,235,0.04) 0%, transparent 70%)',
+        filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0
+    }} />
 
             <div className="page-center" style={{ position: 'relative', zIndex: 1 }}>
                 <div className="container animate-in" style={{ maxWidth: 460 }}>
@@ -93,13 +93,12 @@ export default function LoginPage() {
                     }}>
                         <div style={{
                             width: 72, height: 72, borderRadius: '22px',
-                            background: 'linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%)',
+                            background: 'var(--blue)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             margin: '0 auto 24px',
-                            boxShadow: '0 12px 24px rgba(229,57,53,0.25)',
-                            transform: 'rotate(-3deg)'
+                            boxShadow: '0 12px 24px rgba(30,64,175,0.2)',
                         }}>
-                            <ShieldCheck size={36} color="white" />
+                            <Activity size={36} color="white" />
                         </div>
 
                         <h1 style={{ fontSize: '2rem', marginBottom: 12, letterSpacing: '-0.02em' }}>Welcome back</h1>
@@ -135,7 +134,7 @@ export default function LoginPage() {
                             <div className="form-group" style={{ marginBottom: 24 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, marginLeft: 4 }}>
                                     <label className="form-label">Password</label>
-                                    <a href="#" style={{ fontSize: '0.8125rem', color: 'var(--red)', textDecoration: 'none', fontWeight: 600 }}>Forgot?</a>
+                                    <a href="#" style={{ fontSize: '0.8125rem', color: 'var(--blue)', textDecoration: 'none', fontWeight: 600 }}>Forgot?</a>
                                 </div>
                                 <div style={{ position: 'relative' }}>
                                     <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
@@ -190,7 +189,7 @@ export default function LoginPage() {
                             color: 'var(--text-secondary)'
                         }}>
                             New to MediScan?{' '}
-                            <Link to="/signup" style={{ color: 'var(--red)', fontWeight: 700, textDecoration: 'none' }}>Create an account</Link>
+                            <Link to="/signup" style={{ color: 'var(--blue)', fontWeight: 700, textDecoration: 'none' }}>Create an account</Link>
                         </div>
                     </div>
 
