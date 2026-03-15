@@ -147,18 +147,19 @@ export default function DashboardPage() {
         if (!svg) return;
 
         const canvas = document.createElement('canvas');
+        // Standard phone aspect ratio 1080x1920
         canvas.width = 1080; canvas.height = 1920;
         const ctx = canvas.getContext('2d')!;
 
         // 1. Dark Medical Gradient Background
         const grad = ctx.createRadialGradient(540, 540, 0, 540, 540, 1500);
-        grad.addColorStop(0, '#1e293b');
-        grad.addColorStop(1, '#0f172a');
+        grad.addColorStop(0, '#1E40AF'); // Medical Blue
+        grad.addColorStop(1, '#0F172A'); // Dark Navy
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Suble medical grid/dots pattern
-        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
         for (let x = 0; x < canvas.width; x += 100) {
             for (let y = 0; y < canvas.height; y += 100) {
                 ctx.beginPath();
@@ -167,19 +168,24 @@ export default function DashboardPage() {
             }
         }
 
-        // 2. Large Red Alert Banner at top
-        ctx.fillStyle = '#ef4444'; 
-        ctx.fillRect(0, 150, canvas.width, 300);
-        
+        // 2. MEDICAL EMERGENCY Text (Top)
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
-        ctx.font = '900 84px Inter, system-ui, sans-serif';
-        ctx.fillText('MEDICAL EMERGENCY', canvas.width / 2, 330);
+        ctx.font = '900 96px Inter, system-ui, sans-serif';
+        ctx.fillText('MEDICAL EMERGENCY', canvas.width / 2, 280);
 
-        // 3. QR Code Container
+        ctx.fillStyle = '#93C5FD'; // Light blue accent
+        ctx.font = '700 48px Inter, system-ui, sans-serif';
+        ctx.fillText('Scan for medical information', canvas.width / 2, 360);
+
+        // Accent line below top text
+        ctx.fillStyle = '#3B82F6';
+        ctx.fillRect(canvas.width / 2 - 400, 420, 800, 6);
+
+        // 3. QR Code Container (Rounded White Box)
         const qrSize = 650;
         const qrX = (canvas.width - qrSize) / 2;
-        const qrY = 650;
+        const qrY = 600;
         
         ctx.fillStyle = 'white';
         ctx.beginPath();
@@ -203,29 +209,29 @@ export default function DashboardPage() {
         img.onload = () => {
             ctx.drawImage(img, qrX + 50, qrY + 50, qrSize - 100, qrSize - 100);
 
-            // 4. Branding at bottom
+            // 5. Branding at bottom
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 80px Inter, system-ui, sans-serif';
-            ctx.fillText('MediScan', canvas.width / 2, 1450);
+            ctx.font = '900 84px Inter, system-ui, sans-serif';
+            ctx.fillText('Powered by MediScan', canvas.width / 2, 1480);
             
-            ctx.fillStyle = 'white';
-            ctx.font = '500 48px Inter, system-ui, sans-serif';
-            ctx.fillText('Scan for critical health information', canvas.width / 2, 1530);
+            ctx.fillStyle = '#93C5FD'; // Light blue accent
+            ctx.font = '700 48px Inter, system-ui, sans-serif';
+            ctx.fillText('Emergency Medical ID', canvas.width / 2, 1560);
 
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
-            ctx.font = '400 36px Inter, system-ui, sans-serif';
-            ctx.fillText(profile?.fullName || '', canvas.width / 2, 1600);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '500 36px Inter, system-ui, sans-serif';
+            ctx.fillText(profile?.fullName || '', canvas.width / 2, 1630);
             
-            ctx.fillStyle = '#ef4444';
-            ctx.font = 'bold 32px Inter, system-ui, sans-serif';
-            ctx.fillText('ALWAYS ACCESSIBLE • OTP PROTECTED', canvas.width / 2, 1720);
+            // Decorative line at footer
+            ctx.fillStyle = '#1E40AF';
+            ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
 
             const link = document.createElement('a');
             link.download = `mediscan-wallpaper-${(profile?.fullName || 'user').replace(/\s+/g, '-')}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             URL.revokeObjectURL(url);
-            toast.success('Lock-screen wallpaper generated!');
+            toast.success('Wallaper generated in Medical Blue Theme!');
             toast('💡 Set this as your phone lock-screen wallpaper so emergency responders can scan it if you are unconscious.', {
                 duration: 6000,
                 icon: '📱',
@@ -328,7 +334,7 @@ export default function DashboardPage() {
                                         style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0F172A', color: '#fff', borderColor: '#1e293b' }}
                                         onClick={downloadWallpaper}
                                     >
-                                        <Smartphone size={18} /> Get Lock-Screen Wallpaper
+                                        <Smartphone size={18} /> Download Lock-Screen QR Wallpaper
                                     </button>
                                     
                                     <div style={{ padding: '16px', background: 'var(--surface-2)', borderRadius: 16, textAlign: 'left', border: '1px solid var(--border)' }}>
