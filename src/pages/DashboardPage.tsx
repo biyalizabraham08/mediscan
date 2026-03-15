@@ -69,6 +69,7 @@ export default function DashboardPage() {
 
     const [showCountdown, setShowCountdown] = useState(false);
     const [accidentAlert, setAccidentAlert] = useState('');
+    const [sensorPermission, setSensorPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
     const cooldownRef = useRef<number>(0);
 
     const emergencyUrl = `${window.location.origin}/emergency/${userId}`;
@@ -86,10 +87,10 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (!isMobile) return;
+        if (!isMobile || sensorPermission !== 'granted') return;
         
         let lastAccelTotal = 0;
-        const threshold = 28; // High threshold for crash/impact
+        const threshold = 15; // Lowered for easier testing (was 28)
 
         const handler = (e: DeviceMotionEvent) => {
             const now = Date.now();
@@ -100,16 +101,38 @@ export default function DashboardPage() {
             
             const total = Math.sqrt((acc.x || 0) ** 2 + (acc.y || 0) ** 2 + (acc.z || 0) ** 2);
             
+            // Debug log to help the user see shaking force
+            if (total > 10) console.log(`Motion detected: ${total.toFixed(2)} m/s²`);
+
             // Look for sudden delta
             if (Math.abs(total - lastAccelTotal) > threshold) {
+                console.log("🔥 ACCIDENT THRESHOLD EXCEEDED!");
                 setShowCountdown(true);
             }
             lastAccelTotal = total;
         };
 
+        console.log("🚀 Motion sensor listener active.");
         window.addEventListener('devicemotion', handler as EventListener);
         return () => window.removeEventListener('devicemotion', handler as EventListener);
-    }, []);
+    }, [sensorPermission]);
+
+    async function requestSensorPermission() {
+        if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+            try {
+                const permission = await (DeviceMotionEvent as any).requestPermission();
+                setSensorPermission(permission);
+                if (permission === 'granted') toast.success("Sensors connected!");
+                else toast.error("Sensor permission denied.");
+            } catch (err) {
+                console.error("Sensor permission error:", err);
+                toast.error("Permission request failed.");
+            }
+        } else {
+            // Android/Chrome/Secure context desktop usually grants automatically
+            setSensorPermission('granted');
+        }
+    }
 
     async function handleAccidentConfirm() {
         setShowCountdown(false);
@@ -458,11 +481,23 @@ export default function DashboardPage() {
                                     <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(76, 175, 80, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Bell size={20} color="#4CAF50" />
                                     </div>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)', padding: '4px 8px', borderRadius: 20 }}>ACTIVE</span>
+                                    {sensorPermission === 'granted' ? (
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)', padding: '4px 8px', borderRadius: 20 }}>PROTECTED</span>
+                                    ) : (
+                                        <button 
+                                            onClick={requestSensorPermission}
+                                            className="btn"
+                                            style={{ background: '#FF9800', color: 'white', fontSize: '0.65rem', padding: '4px 8px', borderRadius: 20, border: 'none' }}
+                                        >
+                                            CONNECT SENSORS
+                                        </button>
+                                    )}
                                 </div>
                                 <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Accident Guard</h3>
                                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                                    Automatic impact detection is active. We will notify your contact if a crash is detected.
+                                    {sensorPermission === 'granted' 
+                                        ? 'Automatic impact detection is active. We will notify your contact if a crash is detected.'
+                                        : 'Sensors are disconnected. Tap "CONNECT SENSORS" to enable automatic impact detection.'}
                                 </p>
                             </div>
 
