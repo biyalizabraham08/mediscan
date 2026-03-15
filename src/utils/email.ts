@@ -62,20 +62,21 @@ export async function sendEmergencyAlertEmail(
     const locationNotice = location ? `\n\nApproximate Location: ${location}` : "";
     const defaultMessage = `URGENT: ${patientName}'s emergency medical profile was just accessed via their MediScan QR code at ${accessTime}.${locationNotice}\n\nThey may need immediate assistance. Please check on them right away.`;
 
+    const payload = {
+        email: contactEmail,
+        to_name: contactName,
+        patient_name: patientName,
+        access_time: accessTime,
+        message: customMessage || defaultMessage,
+        location: location || 'Not provided',
+    };
+
     try {
-        await emailjs.send(serviceId, alertTemplateId, {
-            email: contactEmail,
-            to_name: contactName,
-            patient_name: patientName,
-            access_time: accessTime,
-            message: customMessage || defaultMessage,
-            location: location || 'Not provided',
-        }, publicKey);
-        
-        // SMS Preparation (Future Integration)
-        // Structured for Twilio/Firebase: await sendEmergencySMS(phone, patientName, location);
-    } catch (error) {
-        void error; // silently fail — alert is best-effort
+        const result = await emailjs.send(serviceId, alertTemplateId, payload, publicKey);
+        console.log("Emergency Alert Email Info:", result.text);
+    } catch (error: any) {
+        console.error("EmailJS Error (422 usually means wrong Template ID or missing field):", error);
+        void error;
     }
 }
 
@@ -119,16 +120,19 @@ export async function sendAccidentAlertEmail(
     const locationNotice = location ? `\n\nApproximate Location: ${location}` : "";
     const message = `URGENT: An accident may have been detected involving ${patientName}.\n\nThe MediScan accident detection system was triggered from their device at ${accessTime}.${locationNotice}\n\nPlease try contacting them immediately.`;
 
+    const payload = {
+        email: contactEmail,
+        to_name: contactName,
+        patient_name: patientName,
+        access_time: accessTime,
+        message: message,
+        location: location || 'Detecting...'
+    };
+
     try {
-        await emailjs.send(serviceId, alertTemplateId, {
-            email: contactEmail,
-            to_name: contactName,
-            patient_name: patientName,
-            access_time: accessTime,
-            message: message,
-            location: location || 'Detecting...'
-        }, publicKey);
+        const result = await emailjs.send(serviceId, alertTemplateId, payload, publicKey);
+        console.log("Accident Alert Email Info:", result.text);
     } catch (error) {
-        void error;
+        console.error("Accident Alert Email Error:", error);
     }
 }
