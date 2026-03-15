@@ -66,7 +66,7 @@ export async function sendEmergencyAlertEmail(
     try {
         emailjs.init(publicKey);
         await emailjs.send(serviceId, alertTemplateId, {
-            to_email: contactEmail,
+            email: contactEmail,
             to_name: contactName,
             patient_name: patientName,
             access_time: accessTime,
@@ -124,7 +124,7 @@ export async function sendAccidentAlertEmail(
     try {
         emailjs.init(publicKey);
         await emailjs.send(serviceId, alertTemplateId, {
-            to_email: contactEmail,
+            email: contactEmail,
             to_name: contactName,
             patient_name: patientName,
             access_time: accessTime,
