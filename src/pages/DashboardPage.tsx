@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import {
-    User, Edit3, Download, LogOut, Clock, QrCode, Activity,
-    Shield, ShieldOff, Siren, MapPin, CheckCircle2, Zap
+    Edit3, Download, LogOut, Clock, QrCode, Activity,
+    Shield, ShieldOff, Siren, MapPin, Bell, ExternalLink, Zap
 } from 'lucide-react';
 import { getProfile, getAccessLogs, setEmergencyMode, logAccess } from '../lib/mockData';
 import { sendEmergencyAlertEmail } from '../utils/email';
@@ -16,37 +16,37 @@ function formatDate(iso: string) {
 
 function TierBadge({ tier }: { tier: 'public' | 'extended' }) {
     return (
-        <span className={`badge ${tier === 'extended' ? 'badge-red' : 'badge-blue'}`}>
+        <span className={`badge ${tier === 'extended' ? 'badge-red' : 'badge-blue'}`} style={{ fontSize: '0.75rem', padding: '2px 8px' }}>
             {tier === 'extended' ? '🔒 Extended' : '👁 Public'}
         </span>
     );
 }
 
 function TypeBadge({ type }: { type: string }) {
-    if (type === 'doctor_access') return <span className="badge badge-gray">🏥 Doctor</span>;
-    if (type === 'simulated_accident') return <span className="badge" style={{ background: 'rgba(255,152,0,.18)', color: '#FF9800' }}>⚡ Simulated</span>;
-    return <span className="badge badge-gray">🚨 Emergency</span>;
+    if (type === 'doctor_access') return <span className="badge badge-gray" style={{ fontSize: '0.75rem', padding: '2px 8px' }}>🏥 Doctor</span>;
+    if (type === 'simulated_accident') return <span className="badge" style={{ background: 'rgba(255,152,0,.1)', color: '#FF9800', border: '1px solid rgba(255,152,0,.2)', fontSize: '0.75rem', padding: '2px 8px' }}>⚡ Simulated</span>;
+    return <span className="badge" style={{ background: 'rgba(229,57,53,.1)', color: 'var(--red)', border: '1px solid rgba(229,57,53,.2)', fontSize: '0.75rem', padding: '2px 8px' }}>🚨 Emergency</span>;
 }
 
-/** Toggle switch component */
 function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
     return (
         <button
             onClick={() => !disabled && onChange(!checked)}
             disabled={disabled}
+            className="toggle-switch"
             style={{
-                position: 'relative', width: 48, height: 26, borderRadius: 13,
-                background: checked ? 'var(--red)' : 'var(--border)',
+                position: 'relative', width: 44, height: 24, borderRadius: 12,
+                background: checked ? 'var(--blue)' : 'var(--border)',
                 border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-                transition: 'background 0.25s', flexShrink: 0,
+                transition: 'all 0.2s ease', flexShrink: 0,
             }}
             aria-label={checked ? 'Disable' : 'Enable'}
         >
             <span style={{
-                position: 'absolute', top: 3, left: checked ? 25 : 3,
-                width: 20, height: 20, borderRadius: '50%', background: '#fff',
-                boxShadow: '0 1px 4px rgba(0,0,0,.25)',
-                transition: 'left 0.25s',
+                position: 'absolute', top: 3, left: checked ? 23 : 3,
+                width: 18, height: 18, borderRadius: '50%', background: '#fff',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                transition: 'left 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             }} />
         </button>
     );
@@ -61,11 +61,9 @@ export default function DashboardPage() {
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Emergency Mode state
     const [emergencyMode, setEmergencyModeState] = useState(true);
     const [togglingMode, setTogglingMode] = useState(false);
 
-    // Accident Detection state
     const [accidentDetectionEnabled, setAccidentDetectionEnabled] = useState(false);
     const [simulatingAccident, setSimulatingAccident] = useState(false);
     const [accidentAlert, setAccidentAlert] = useState('');
@@ -82,11 +80,10 @@ export default function DashboardPage() {
         });
     }, [userId]);
 
-    // Motion-based accident detection (DeviceMotionEvent)
     useEffect(() => {
         if (!accidentDetectionEnabled) return;
         let lastAccel = 0;
-        const threshold = 25; // m/s²
+        const threshold = 25;
 
         const handler = (e: DeviceMotionEvent) => {
             const acc = e.accelerationIncludingGravity;
@@ -107,27 +104,23 @@ export default function DashboardPage() {
         setSimulatingAccident(true);
         setAccidentAlert(`🚨 ${reason} Emergency alert triggered!`);
 
-        // Log the event
         await logAccess(userId, 'simulated_accident', 'public');
 
-        // Send email to emergency contact
         if (profile?.emergencyContacts?.[0] && profile.fullName) {
             const contact = profile.emergencyContacts[0];
             const alertMsg = `🚨 URGENT: An accident or sudden impact was detected for ${profile.fullName}.\n\nDetection Method: ${reason}\nTime: ${new Date().toLocaleString()}\n\nPlease attempt to contact them or check their location immediately.`;
             
             await sendEmergencyAlertEmail(
-                contact.phone, // best-effort using phone; ideally an email field
+                contact.phone,
                 contact.name,
                 profile.fullName,
                 alertMsg
             );
         }
 
-        // Refresh logs
         const freshLogs = await getAccessLogs(userId);
         setLogs(freshLogs);
 
-        // Auto-clear alert after 8s
         if (accidentTimeout.current) clearTimeout(accidentTimeout.current);
         accidentTimeout.current = setTimeout(() => {
             setSimulatingAccident(false);
@@ -152,255 +145,238 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="page" style={{ background: 'var(--bg)' }}>
+        <div className="page" style={{ background: 'var(--surface-2)' }}>
             {/* Navbar */}
             <nav className="navbar">
                 <Link to="/" className="navbar-brand">
-                    <svg className="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#E53935" /><rect x="13" y="6" width="6" height="20" rx="2" fill="white" /><rect x="6" y="13" width="20" height="6" rx="2" fill="white" /></svg>
+                    <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
+                        <Activity size={20} color="white" />
+                    </div>
                     <span>Medi<em>Scan</em></span>
                 </Link>
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <Link to="/profile/edit" className="btn btn-ghost btn-sm"><Edit3 size={14} />Edit Profile</Link>
-                    <button className="btn btn-ghost btn-sm" onClick={handleLogout}><LogOut size={14} />Logout</button>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <div className="badge badge-gray" style={{ background: 'white', border: '1.5px solid var(--border)' }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', marginRight: 6 }} />
+                        System Active
+                    </div>
+                    <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ color: 'var(--red)' }}>
+                        <LogOut size={16} /> Sign Out
+                    </button>
                 </div>
             </nav>
 
-            {/* Accident Alert Banner */}
+            {/* Emergency Alert Banner */}
             {accidentAlert && (
                 <div style={{
-                    background: '#E53935', color: '#fff', padding: '14px 24px',
-                    textAlign: 'center', fontWeight: 700, fontSize: '1rem',
+                    background: 'var(--red)', color: '#fff', padding: '16px 24px',
+                    textAlign: 'center', fontWeight: 800, fontSize: '1rem',
                     animation: 'pulse 0.8s ease-in-out infinite alternate',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                    boxShadow: '0 4px 20px rgba(229, 57, 53, 0.3)', position: 'relative', zIndex: 100
                 }}>
-                    <Siren size={20} />
+                    <Siren size={24} />
                     {accidentAlert}
-                    <Siren size={20} />
+                    <button onClick={() => setAccidentAlert('')} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '4px 8px', borderRadius: 4, cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700, marginLeft: 16 }}>DISMISS</button>
                 </div>
             )}
 
-            <div className="container-lg" style={{ padding: '32px 24px 60px' }}>
-                <div className="animate-in">
-                    {/* Welcome */}
-                    <div style={{ marginBottom: 28 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--red-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <User size={20} color="var(--red)" />
-                            </div>
-                            <div>
-                                <h2 style={{ fontSize: '1.25rem', marginBottom: 0 }}>Welcome back, {authState.user?.name?.split(' ')[0]}!</h2>
-                                <p style={{ fontSize: '0.875rem', marginTop: 0 }}>{authState.user?.email}</p>
-                            </div>
-                        </div>
+            <main className="container-lg" style={{ padding: '40px 24px 80px' }}>
+                
+                {/* ── Header Section ── */}
+                <div style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 20 }}>
+                    <div className="animate-in">
+                        <p style={{ fontWeight: 800, fontSize: '0.75rem', color: 'var(--blue)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>Emergency Control Panel</p>
+                        <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>Hello, {authState.user?.name?.split(' ')[0]}</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Review your medical visibility and access logs.</p>
                     </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                        <Link to="/profile/edit" className="btn btn-secondary">
+                            <Edit3 size={18} /> Edit Profile
+                        </Link>
+                        <Link to="/qr-code" className="btn btn-primary">
+                            <Download size={18} /> Get QR Code
+                        </Link>
+                    </div>
+                </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
+                    
+                    {/* ── Column 1: QR & Summary ── */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                        
                         {/* QR Card */}
-                        <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start' }}>
-                                <QrCode size={18} color="var(--red)" />
-                                <h3 style={{ fontSize: '1rem' }}>Your Emergency QR</h3>
+                        <div className="card" style={{ textAlign: 'center', padding: '32px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <QrCode size={20} color="var(--blue)" />
+                                    <span style={{ fontWeight: 800, fontSize: '0.875rem' }}>Your Medical ID</span>
+                                </div>
+                                <div className="badge badge-blue">Verified</div>
                             </div>
 
                             {profile ? (
                                 <>
-                                    <div style={{ padding: 12, background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
-                                        <QRCodeSVG value={emergencyUrl} size={160} level="H" fgColor="#0F172A" bgColor="#ffffff" />
+                                    <div style={{ 
+                                        padding: 24, background: 'var(--surface-2)', 
+                                        borderRadius: 24, display: 'inline-block', 
+                                        marginBottom: 24, border: '1.5px solid var(--border)' 
+                                    }}>
+                                        <QRCodeSVG value={emergencyUrl} size={180} level="H" fgColor="var(--navy)" bgColor="transparent" />
                                     </div>
-                                    <div style={{ textAlign: 'center' }}>
-                                        <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)', marginBottom: 2 }}>{profile.fullName}</p>
-                                        <span className="badge badge-red" style={{ fontSize: '0.875rem' }}>Blood Group: {profile.bloodGroup}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-                                        <Link to="/qr-code" className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                                            <Download size={13} /> Download
-                                        </Link>
-                                        <Link to="/profile/edit" className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                                            <Edit3 size={13} /> Edit
-                                        </Link>
-                                    </div>
-                                    <div style={{ width: '100%', background: 'var(--surface-2)', borderRadius: 'var(--radius-sm)', padding: '10px 12px' }}>
-                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: 4 }}>Emergency URL</p>
-                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', wordBreak: 'break-all', fontFamily: 'monospace' }}>{emergencyUrl}</p>
+                                    <h3 style={{ marginBottom: 4 }}>{profile.fullName}</h3>
+                                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: 20 }}>Blood Group: <span style={{ color: 'var(--red)', fontWeight: 800 }}>{profile.bloodGroup}</span></p>
+                                    
+                                    <div style={{ padding: '16px', background: 'var(--surface-2)', borderRadius: 16, textAlign: 'left', border: '1px solid var(--border)' }}>
+                                        <p style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: 4 }}>EMERGENCY LINK</p>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{emergencyUrl}</span>
+                                            <ExternalLink size={14} color="var(--text-muted)" />
+                                        </div>
                                     </div>
                                 </>
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                                    <p style={{ marginBottom: 16 }}>No medical profile yet.</p>
-                                    <Link to="/profile/create" className="btn btn-primary">Create Profile</Link>
+                                <div style={{ padding: '40px 0' }}>
+                                    <p style={{ marginBottom: 24, color: 'var(--text-secondary)' }}>You haven't created your medical profile yet. Responders won't see any life-saving data.</p>
+                                    <Link to="/profile/create" className="btn btn-primary btn-full">Create Profile Now</Link>
                                 </div>
                             )}
                         </div>
 
-                        {/* Profile Summary */}
+                        {/* Profile Quick Stats */}
                         {profile && (
                             <div className="card">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                                    <Activity size={18} color="var(--red)" />
-                                    <h3 style={{ fontSize: '1rem' }}>Profile Summary</h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+                                    <Activity size={20} color="var(--blue)" />
+                                    <span style={{ fontWeight: 800, fontSize: '0.875rem' }}>Profile Health</span>
                                 </div>
-
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                <div style={{ display: 'grid', gap: 16 }}>
                                     {[
-                                        { label: 'Blood Group', value: <span className="badge badge-red" style={{ fontSize: '0.9rem', padding: '4px 12px' }}>{profile.bloodGroup}</span> },
-                                        { label: 'Allergies', value: `${profile.allergies.length} total (${profile.allergies.filter(a => a.severity !== 'Mild').length} severe)` },
-                                        { label: 'Conditions', value: `${profile.conditions.length} listed` },
-                                        { label: 'Medications', value: `${profile.medications.length} listed` },
-                                        { label: 'Emergency Contacts', value: `${profile.emergencyContacts.length} contacts` },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 10, borderBottom: '1px solid var(--border)' }}>
-                                            <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{label}</span>
-                                            {typeof value === 'string'
-                                                ? <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>{value}</span>
-                                                : value}
+                                        { label: 'Blood Group', value: profile.bloodGroup, color: 'var(--red)' },
+                                        { label: 'Allergies', value: `${profile.allergies.length} reported` },
+                                        { label: 'Medications', value: `${profile.medications.length} active` },
+                                        { label: 'Contacts', value: `${profile.emergencyContacts.length} numbers` },
+                                    ].map((stat, i) => (
+                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{stat.label}</span>
+                                            <span style={{ fontSize: '0.875rem', fontWeight: 800, color: stat.color || 'inherit' }}>{stat.value}</span>
                                         </div>
                                     ))}
                                 </div>
-
-                                <Link to={`/emergency/${userId}`} className="btn btn-secondary btn-sm" style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }} target="_blank">
-                                    Preview Emergency View ↗
-                                </Link>
+                                <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
+                                    <Link to={`/emergency/${userId}`} target="_blank" className="btn btn-ghost btn-full" style={{ fontSize: '0.875rem' }}>
+                                        View Emergency Page <ExternalLink size={14} style={{ marginLeft: 8 }} />
+                                    </Link>
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* ── Emergency Mode Toggle ── */}
-                    {profile && (
-                        <div className="card" style={{ marginTop: 20 }}>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-                                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flex: 1 }}>
-                                    <div style={{
-                                        width: 42, height: 42, borderRadius: 10, flexShrink: 0,
-                                        background: emergencyMode ? 'rgba(229,57,53,.12)' : 'var(--surface-2)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                    }}>
-                                        {emergencyMode
-                                            ? <Shield size={20} color="var(--red)" />
-                                            : <ShieldOff size={20} color="var(--text-muted)" />}
+                    {/* ── Column 2: Controls & History ── */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                        
+                        {/* Emergency Controls Grid */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
+                            {/* Emergency Mode Toggle */}
+                            <div className="card" style={{ borderLeft: `4px solid ${emergencyMode ? 'var(--blue)' : 'var(--border)'}` }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: emergencyMode ? 'rgba(30, 64, 175, 0.1)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {emergencyMode ? <Shield size={20} color="var(--blue)" /> : <ShieldOff size={20} color="var(--text-muted)" />}
                                     </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Emergency Mode</h3>
-                                        {emergencyMode ? (
-                                            <p style={{ fontSize: '0.875rem', color: '#4CAF50', fontWeight: 600 }}>
-                                                <CheckCircle2 size={13} style={{ display: 'inline', marginRight: 4 }} />
-                                                ON — Full medical information visible to rescuers
-                                            </p>
-                                        ) : (
-                                            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                                                OFF — Only name &amp; emergency contact visible
-                                            </p>
-                                        )}
-                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: 6 }}>
-                                            When ON, anyone who scans your QR code can see your allergies, medications, conditions, and blood group.
-                                        </p>
-                                    </div>
+                                    <Toggle checked={emergencyMode} onChange={handleEmergencyModeToggle} disabled={togglingMode} />
                                 </div>
-                                <Toggle
-                                    checked={emergencyMode}
-                                    onChange={handleEmergencyModeToggle}
-                                    disabled={togglingMode}
-                                />
+                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Emergency Mode</h3>
+                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                    {emergencyMode 
+                                        ? 'Full clinical data is currently visible to responders.' 
+                                        : 'Only minimal identification is visible to the public.'}
+                                </p>
+                            </div>
+
+                            {/* Accident Detection Toggle */}
+                            <div className="card" style={{ borderLeft: `4px solid ${accidentDetectionEnabled ? '#FF9800' : 'var(--border)'}` }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: accidentDetectionEnabled ? 'rgba(255, 152, 0, 0.1)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Bell size={20} color={accidentDetectionEnabled ? '#FF9800' : 'var(--text-muted)'} />
+                                    </div>
+                                    <Toggle checked={accidentDetectionEnabled} onChange={setAccidentDetectionEnabled} />
+                                </div>
+                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Auto-Alert</h3>
+                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                    {accidentDetectionEnabled 
+                                        ? 'Monitoring motion sensors for sudden impact.' 
+                                        : 'Automatic impact detection is currently disabled.'}
+                                </p>
                             </div>
                         </div>
-                    )}
 
-                    {/* ── Accident Detection ── */}
-                    {profile && (
-                        <div className="card" style={{ marginTop: 20 }}>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: accidentDetectionEnabled ? 16 : 0 }}>
-                                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flex: 1 }}>
-                                    <div style={{
-                                        width: 42, height: 42, borderRadius: 10, flexShrink: 0,
-                                        background: accidentDetectionEnabled ? 'rgba(255,152,0,.12)' : 'var(--surface-2)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                    }}>
-                                        <Siren size={20} color={accidentDetectionEnabled ? '#FF9800' : 'var(--text-muted)'} />
+                        {/* Simulated Accident Action */}
+                        {accidentDetectionEnabled && (
+                            <div className="card" style={{ background: 'linear-gradient(135deg, white 0%, #FFF9F2 100%)', border: '1.5px dashed #FF9800' }}>
+                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <h4 style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                            <Zap size={16} color="#FF9800" /> Test System
+                                        </h4>
+                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Trigger a mock emergency to verify your email alerts are working.</p>
                                     </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Accident Detection</h3>
-                                        <p style={{ fontSize: '0.875rem', color: accidentDetectionEnabled ? '#FF9800' : 'var(--text-muted)', fontWeight: 600 }}>
-                                            {accidentDetectionEnabled ? '⚡ Active — monitoring device motion' : 'Disabled'}
-                                        </p>
-                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: 6 }}>
-                                            Detects sudden device motion and automatically triggers an emergency alert to your contacts.
-                                        </p>
-                                    </div>
-                                </div>
-                                <Toggle checked={accidentDetectionEnabled} onChange={setAccidentDetectionEnabled} />
-                            </div>
-
-                            {accidentDetectionEnabled && (
-                                <div style={{
-                                    borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex',
-                                    alignItems: 'center', gap: 12, flexWrap: 'wrap'
-                                }}>
-                                    <button
-                                        className="btn btn-sm"
-                                        onClick={() => triggerAccidentAlert('Manual simulation triggered.')}
+                                    <button 
+                                        onClick={() => triggerAccidentAlert('Manual test triggered by user.')}
                                         disabled={simulatingAccident}
-                                        style={{
-                                            background: simulatingAccident ? 'var(--surface-2)' : '#E53935',
-                                            color: simulatingAccident ? 'var(--text-muted)' : '#fff',
-                                            gap: 8
-                                        }}
+                                        className="btn btn-secondary btn-sm"
+                                        style={{ borderColor: '#FF9800', color: '#E65100' }}
                                     >
-                                        <Zap size={14} />
-                                        {simulatingAccident ? 'Alert sent…' : 'Simulate Accident'}
+                                        {simulatingAccident ? 'Alerting...' : 'Test Alert'}
                                     </button>
-                                    <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                                        For demo purposes. Logs an event and sends an alert email to your emergency contact.
-                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Recent Access Log */}
+                        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <div style={{ padding: '24px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <Clock size={20} color="var(--blue)" />
+                                    <span style={{ fontWeight: 800, fontSize: '0.875rem' }}>Access Logs</span>
+                                </div>
+                                <div className="badge badge-gray">{logs.length} Total</div>
+                            </div>
+                            
+                            {logs.length === 0 ? (
+                                <div style={{ padding: '60px 24px', textAlign: 'center' }}>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No access events recorded yet.</p>
+                                </div>
+                            ) : (
+                                <div style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                                    {logs.map((log, i) => (
+                                        <div key={log.id} style={{ 
+                                            padding: '16px 24px', 
+                                            borderBottom: i === logs.length - 1 ? 'none' : '1px solid var(--border)',
+                                            background: i === 0 ? 'rgba(30, 64, 175, 0.02)' : 'transparent',
+                                            display: 'grid', gridTemplateColumns: '1fr auto', gap: 12
+                                        }}>
+                                            <div>
+                                                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
+                                                    <TypeBadge type={log.accessorType} />
+                                                    <TierBadge tier={log.accessTier} />
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                                                    <MapPin size={10} />
+                                                    {log.location || 'Unknown Location'}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(log.accessedAt).split(',')[1]}</p>
+                                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDate(log.accessedAt).split(',')[0]}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
-                    )}
 
-                    {/* ── Emergency Access History ── */}
-                    <div className="card" style={{ marginTop: 20 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                            <Clock size={18} color="var(--red)" />
-                            <h3 style={{ fontSize: '1rem' }}>Emergency Access History</h3>
-                            <span className="badge badge-gray" style={{ marginLeft: 4 }}>{logs.length}</span>
-                        </div>
-
-                        {logs.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>
-                                <p>No access events yet.</p>
-                                <p style={{ fontSize: '0.875rem', marginTop: 4 }}>When someone scans your QR code, it will appear here.</p>
-                            </div>
-                        ) : (
-                            <div style={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-                                    <thead>
-                                        <tr style={{ background: 'var(--surface-2)' }}>
-                                            {['Date & Time', 'Access Type', 'Tier', 'Location'].map(h => (
-                                                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>{h}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {logs.map((log, i) => (
-                                            <tr key={log.id} style={{ borderTop: '1px solid var(--border)', background: i % 2 ? 'var(--surface-2)' : 'transparent' }}>
-                                                <td style={{ padding: '10px 14px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{formatDate(log.accessedAt)}</td>
-                                                <td style={{ padding: '10px 14px' }}><TypeBadge type={log.accessorType} /></td>
-                                                <td style={{ padding: '10px 14px' }}><TierBadge tier={log.accessTier} /></td>
-                                                <td style={{ padding: '10px 14px', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
-                                                    {log.location ? (
-                                                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                            <MapPin size={12} />
-                                                            {log.location}
-                                                        </span>
-                                                    ) : '—'}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

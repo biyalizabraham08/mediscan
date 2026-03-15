@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import {
-    Shield, Zap, Heart, QrCode, ChevronRight, Activity,
-    UserPlus, Smartphone, Siren, Lock, Phone, AlertTriangle,
-    Pill, Eye, BadgeCheck
+    Shield, QrCode, Activity,
+    UserPlus, Smartphone, Siren,
+    Zap, ArrowRight, CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { seedDemoData } from '../lib/mockData';
@@ -20,23 +20,21 @@ export default function LandingPage() {
     }
 
     return (
-        <div className="page" style={{ background: '#fff' }}>
+        <div className="page">
 
             {/* ── Navbar ── */}
             <nav className="navbar">
-                <a className="navbar-brand" href="/">
-                    <svg className="logo" viewBox="0 0 32 32" fill="none">
-                        <rect width="32" height="32" rx="8" fill="#E53935" />
-                        <rect x="13" y="6" width="6" height="20" rx="2" fill="white" />
-                        <rect x="6" y="13" width="20" height="6" rx="2" fill="white" />
-                    </svg>
+                <Link className="navbar-brand" to="/">
+                    <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
+                        <Activity size={20} color="white" />
+                    </div>
                     <span>Medi<em>Scan</em></span>
-                </a>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                </Link>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                     {authState.isAuthenticated ? (
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{ display: 'flex', gap: 12 }}>
                             <Link to="/dashboard" className="btn btn-primary btn-sm">Dashboard</Link>
-                            <button onClick={() => logout()} className="btn btn-ghost btn-sm">Logout</button>
+                            <button onClick={() => logout()} className="btn btn-ghost btn-sm">Sign Out</button>
                         </div>
                     ) : (
                         <>
@@ -49,328 +47,214 @@ export default function LandingPage() {
 
             <main style={{ flex: 1 }}>
 
-                {/* ── Hero ── */}
-                <section className="landing-hero">
-                    <div className="landing-hero-glow" />
-                    <div className="animate-in" style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center' }}>
-
-                        <div className="landing-pill">
-                            <Activity size={14} color="#E53935" />
-                            <span>Emergency-Ready Medical ID</span>
+                {/* ── Hero Section ── */}
+                <section style={{ padding: '80px 24px', background: 'white', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(30, 64, 175, 0.03)', pointerEvents: 'none' }} />
+                    
+                    <div className="container-lg" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
+                        <div className="animate-in">
+                            <div className="badge badge-blue" style={{ marginBottom: 20 }}>
+                                <Shield size={14} style={{ marginRight: 6 }} />
+                                Trusted by Professional Responders
+                            </div>
+                            <h1 style={{ marginBottom: 20 }}>
+                                Scan. Save.<br />
+                                <span style={{ color: 'var(--blue)' }}>Survive.</span>
+                            </h1>
+                            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: 32, maxWidth: 520 }}>
+                                Instant access to critical medical information when every second counts. MediScan bridges the gap between patient and responder.
+                            </p>
+                            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                                <Link to="/signup" className="btn btn-primary btn-lg">
+                                    Create Medical ID <ArrowRight size={20} />
+                                </Link>
+                                <a href="#demo" className="btn btn-secondary btn-lg">
+                                    Try Demo Scan
+                                </a>
+                            </div>
+                            <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
+                                <div style={{ display: 'flex' }}>
+                                    {[1,2,3,4].map(i => (
+                                        <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid white', background: `hsl(${i * 40}, 70%, 50%)`, marginLeft: i === 1 ? 0 : -10 }} />
+                                    ))}
+                                </div>
+                                <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                                    Joined by <span style={{ color: 'var(--text-header)' }}>2,400+</span> individuals
+                                </p>
+                            </div>
                         </div>
 
-                        <h1 className="landing-headline">
-                            Scan.&nbsp;<span style={{ color: 'var(--red)' }}>Save.</span>&nbsp;Survive.
-                        </h1>
-                        <p className="landing-subtext">
-                            MediScan stores your critical medical data — allergies, blood group, medications &amp; emergency contacts — in a secure QR code. First responders get instant access when every second counts.
+                        {/* Lock Screen Illustration */}
+                        <div className="animate-in" style={{ animationDelay: '0.1s', position: 'relative' }}>
+                            <div style={{ 
+                                width: '100%', maxWidth: 300, 
+                                margin: '0 auto', background: '#000', 
+                                padding: 12, borderRadius: 48, 
+                                boxShadow: '0 50px 100px -20px rgba(15, 23, 42, 0.25)',
+                                border: '8px solid #1e293b'
+                            }}>
+                                <div style={{ 
+                                    aspectRatio: '9/19.5', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', 
+                                    borderRadius: 38, overflow: 'hidden', position: 'relative' 
+                                }}>
+                                    {/* Phone UI elements */}
+                                    <div style={{ position: 'absolute', top: 30, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', color: '#fff' }}>
+                                        <p style={{ fontSize: '3rem', fontWeight: 300 }}>12:45</p>
+                                        <p style={{ fontSize: '0.875rem', opacity: 0.8 }}>Sunday, March 15</p>
+                                    </div>
+
+                                    {/* The QR Widget */}
+                                    <div style={{ 
+                                        position: 'absolute', bottom: 40, left: 20, right: 20, 
+                                        background: 'rgba(255,255,255,0.95)', padding: 20, 
+                                        borderRadius: 20, backdropFilter: 'blur(10px)',
+                                        textAlign: 'center'
+                                    }}>
+                                        <div style={{ background: '#000', padding: 10, borderRadius: 12, display: 'inline-block', marginBottom: 10 }}>
+                                            <QrCode size={120} color="#fff" />
+                                        </div>
+                                        <p style={{ fontWeight: 800, color: '#000', fontSize: '0.875rem', marginBottom: 2 }}>ALEX JOHNSON</p>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--red)', fontWeight: 800 }}>🚨 EMERGENCY MEDICAL ID</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Accent elements */}
+                            <div style={{ position: 'absolute', bottom: -20, left: -20, padding: '12px 20px', background: 'white', border: '1.5px solid var(--border)', borderRadius: 12, boxShadow: 'var(--shadow-lg)' }}>
+                                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                    <CheckCircle2 size={18} color="var(--green)" />
+                                    <p style={{ fontSize: '0.8125rem', fontWeight: 700 }}>Profile Verified</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ── Demo QR Section ── */}
+                <section id="demo" style={{ padding: '100px 24px', background: 'var(--surface-2)' }}>
+                    <div className="container-lg" style={{ textAlign: 'center' }}>
+                        <div className="badge badge-gray" style={{ marginBottom: 16 }}>Live Demonstration</div>
+                        <h2>Try the Experience</h2>
+                        <p style={{ maxWidth: 600, margin: '0 auto 52px', color: 'var(--text-secondary)' }}>
+                            No account needed. Scan the demo QR code below with your phone camera to see exactly how a first responder sees your profile.
                         </p>
 
-                        <div className="landing-cta-group">
-                            <Link to="/signup" className="btn btn-primary btn-lg" style={{ minWidth: 200 }}>
-                                Create Your Profile <ChevronRight size={18} />
-                            </Link>
-                            <button onClick={handleDemo} className="btn btn-secondary btn-lg" style={{ minWidth: 160 }}>
-                                View Demo
+                        <div style={{ 
+                            display: 'inline-block', background: 'white', padding: '40px', 
+                            borderRadius: '32px', border: '1.5px solid var(--border)',
+                            boxShadow: 'var(--shadow-lg)'
+                        }}>
+                            <div style={{ background: 'var(--surface-2)', padding: '24px', borderRadius: '20px', marginBottom: 24 }}>
+                                <QrCode size={200} />
+                            </div>
+                            <h3 style={{ marginBottom: 12 }}>Sample Profile: Alex Johnson</h3>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: 24 }}>
+                                Scan with your phone's camera app
+                            </p>
+                            <button onClick={handleDemo} className="btn btn-secondary btn-full">
+                                View Demo on This Device
                             </button>
                         </div>
-
-                        {!authState.isAuthenticated && (
-                            <p style={{ marginTop: 20, fontSize: '0.9375rem', color: 'var(--text-secondary)' }}>
-                                Already have an account?{' '}
-                                <Link to="/login" style={{ color: 'var(--red)', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
-                            </p>
-                        )}
-                    </div>
-
-                    {/* QR Code mockup */}
-                    <div className="animate-in" style={{ marginTop: 56, display: 'flex', justifyContent: 'center', animationDelay: '0.15s' }}>
-                        <div className="landing-qr-card">
-                            <div style={{ position: 'relative', width: 160, height: 160 }}>
-                                <svg viewBox="0 0 160 160" width="160" height="160">
-                                    <rect x="8" y="8" width="44" height="44" rx="4" fill="none" stroke="#0F172A" strokeWidth="7" />
-                                    <rect x="17" y="17" width="26" height="26" rx="2" fill="#0F172A" />
-                                    <rect x="108" y="8" width="44" height="44" rx="4" fill="none" stroke="#0F172A" strokeWidth="7" />
-                                    <rect x="117" y="17" width="26" height="26" rx="2" fill="#0F172A" />
-                                    <rect x="8" y="108" width="44" height="44" rx="4" fill="none" stroke="#0F172A" strokeWidth="7" />
-                                    <rect x="17" y="117" width="26" height="26" rx="2" fill="#0F172A" />
-                                    {[66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138].map((y, i) =>
-                                        [66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138].map((x, j) =>
-                                            ((i + j) % 3 !== 0) ? <rect key={`${i}-${j}`} x={x} y={y} width="5" height="5" fill="#0F172A" /> : null
-                                        )
-                                    )}
-                                    {[8, 14, 20, 26, 32, 38, 44].map((y, i) =>
-                                        [66, 72, 78, 84, 90, 96, 102, 108].map((x, j) =>
-                                            ((i * 3 + j) % 2 === 0) ? <rect key={`m-${i}-${j}`} x={x} y={y} width="5" height="5" fill="#0F172A" /> : null
-                                        )
-                                    )}
-                                    {[66, 72, 78, 84, 90, 96, 102, 108].map((y, i) =>
-                                        [8, 14, 20, 26, 32, 38, 44].map((x, j) =>
-                                            ((i + j * 2) % 3 !== 1) ? <rect key={`l-${i}-${j}`} x={x} y={y} width="5" height="5" fill="#0F172A" /> : null
-                                        )
-                                    )}
-                                    <rect x="73" y="64" width="14" height="32" rx="3" fill="#E53935" />
-                                    <rect x="64" y="73" width="32" height="14" rx="3" fill="#E53935" />
-                                </svg>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>Alex Johnson</p>
-                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: 2 }}>Blood Group: O+ · Emergency Medical ID</p>
-                            </div>
-                            <div className="landing-qr-badge">
-                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF50', animation: 'pulse 2s ease-in-out infinite' }} />
-                                Emergency Ready
-                            </div>
-                        </div>
                     </div>
                 </section>
 
-                {/* ── How It Works ── */}
-                <section className="landing-section" style={{ background: '#fff' }}>
+                {/* ── How It Works (4 Steps) ── */}
+                <section style={{ padding: '100px 24px', background: 'white' }}>
                     <div className="container-lg">
-                        <div className="landing-section-label">Simple Process</div>
-                        <h2 className="landing-section-title">How It Works</h2>
-                        <p className="landing-section-sub">Set up your emergency profile in under 5 minutes.</p>
+                        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+                            <div className="badge badge-blue" style={{ marginBottom: 16 }}>Modern Emergency System</div>
+                            <h2>How MediScan Saves Lives</h2>
+                        </div>
 
-                        <div className="landing-steps">
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 32 }}>
                             {[
                                 {
-                                    icon: <UserPlus size={26} color="#E53935" />,
-                                    num: '01',
-                                    label: 'Create Medical Profile',
-                                    desc: 'Enter your blood group, allergies, medications, medical conditions, and emergency contacts in our guided form.',
-                                    color: 'var(--red-light)',
+                                    icon: <UserPlus size={32} color="var(--blue)" />,
+                                    title: "1. Build Profile",
+                                    desc: "Securely input blood group, allergies, conditions, and emergency contacts."
                                 },
                                 {
-                                    icon: <QrCode size={26} color="#1565C0" />,
-                                    num: '02',
-                                    label: 'Generate QR Code',
-                                    desc: 'Get a unique, secure QR code tied to your profile. Download it and set it as your phone lockscreen wallpaper.',
-                                    color: 'var(--blue-light)',
+                                    icon: <Smartphone size={32} color="var(--blue)" />,
+                                    title: "2. Set Lockscreen",
+                                    desc: "Download your unique QR ID and set it as your phone's lockscreen wallpaper."
                                 },
                                 {
-                                    icon: <Siren size={26} color="#E65100" />,
-                                    num: '03',
-                                    label: 'Scan During Emergency',
-                                    desc: 'First responders scan your QR code to instantly access your critical data — no app, no login, no delay required.',
-                                    color: 'var(--orange-light)',
+                                    icon: <Zap size={32} color="var(--blue)" />,
+                                    title: "3. Instant Access",
+                                    desc: "In an emergency, someone scans the QR to notify your emergency contacts."
                                 },
-                            ].map((step, i) => (
-                                <div key={i} className="landing-step-wrapper">
-                                    <div className="landing-step-card">
-                                        <div className="landing-step-num">{step.num}</div>
-                                        <div className="landing-step-icon" style={{ background: step.color }}>
-                                            {step.icon}
-                                        </div>
-                                        <h3 style={{ marginBottom: 10, fontSize: '1.0625rem' }}>{step.label}</h3>
-                                        <p style={{ fontSize: '0.9rem', lineHeight: 1.65 }}>{step.desc}</p>
+                                {
+                                    icon: <Shield size={32} color="var(--blue)" />,
+                                    title: "4. Professional Care",
+                                    desc: "Doctors access your full history via OTP, ensuring safe and accurate treatment."
+                                }
+                            ].map((step, idx) => (
+                                <div key={idx} className="card card-sm" style={{ border: 'none', background: 'var(--surface-2)', textAlign: 'center' }}>
+                                    <div style={{ width: 64, height: 64, background: 'white', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: 'var(--shadow)' }}>
+                                        {step.icon}
                                     </div>
-                                    {i < 2 && <div className="landing-step-arrow"><ChevronRight size={22} color="#CBD5E1" /></div>}
+                                    <h3 style={{ marginBottom: 12, fontSize: '1.125rem' }}>{step.title}</h3>
+                                    <p style={{ fontSize: '0.9375rem', lineHeight: 1.6 }}>{step.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* ── Features ── */}
-                <section className="landing-section" style={{ background: 'var(--surface-2)' }}>
+                {/* ── Dashboard Feature Grid ── */}
+                <section style={{ padding: '100px 24px', background: 'var(--navy)', color: 'white' }}>
                     <div className="container-lg">
-                        <div className="landing-section-label">What You Get</div>
-                        <h2 className="landing-section-title">Built for Real Emergencies</h2>
-                        <p className="landing-section-sub">Every feature is designed with one goal: getting the right medical info to first responders, instantly.</p>
-
-                        <div className="landing-features-grid">
-                            {[
-                                {
-                                    icon: <AlertTriangle size={22} color="#E53935" />,
-                                    bg: 'var(--red-light)',
-                                    title: 'Critical Allergy Alerts',
-                                    desc: 'Life-threatening and severe allergies are displayed prominently in high-contrast red — impossible to miss.',
-                                },
-                                {
-                                    icon: <Phone size={22} color="#1565C0" />,
-                                    bg: 'var(--blue-light)',
-                                    title: 'Emergency Contact Access',
-                                    desc: 'One-tap call buttons for emergency contacts, visible immediately on QR scan — no login required.',
-                                },
-                                {
-                                    icon: <Lock size={22} color="#2E7D32" />,
-                                    bg: 'var(--green-light)',
-                                    title: 'Secure OTP Medical Records',
-                                    desc: 'Full medical history unlocked only with an OTP sent to the patient. Verified doctors get complete access.',
-                                },
-                                {
-                                    icon: <Smartphone size={22} color="#E65100" />,
-                                    bg: 'var(--orange-light)',
-                                    title: 'QR Emergency Identification',
-                                    desc: 'Your unique QR works as a lockscreen wallpaper. Accessible even when the phone is locked, offline.',
-                                },
-                                {
-                                    icon: <Shield size={22} color="#6A1B9A" />,
-                                    bg: '#F3E5F5',
-                                    title: 'Privacy Protected Data',
-                                    desc: 'Two-tier access keeps sensitive data private. Public info is minimal; extended records need OTP verification.',
-                                },
-                                {
-                                    icon: <Pill size={22} color="#00695C" />,
-                                    bg: '#E0F2F1',
-                                    title: 'Medication & Condition Log',
-                                    desc: 'Current medications, dosages, and chronic conditions stored securely — shareable with treating physicians.',
-                                },
-                            ].map((f, i) => (
-                                <div key={i} className="landing-feature-card">
-                                    <div className="landing-feature-icon" style={{ background: f.bg }}>
-                                        {f.icon}
-                                    </div>
-                                    <h3 style={{ marginBottom: 8, fontSize: '1rem' }}>{f.title}</h3>
-                                    <p style={{ fontSize: '0.875rem', lineHeight: 1.65 }}>{f.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* ── Emergency Scenario ── */}
-                <section className="landing-section" style={{ background: '#0D0D0D', padding: '72px 24px' }}>
-                    <div className="container-lg">
-                        <div className="landing-section-label" style={{ color: '#E53935', borderColor: 'rgba(229,57,53,.3)', background: 'rgba(229,57,53,.1)' }}>
-                            Live Scenario
-                        </div>
-                        <h2 className="landing-section-title" style={{ color: '#fff' }}>Emergency Dashboard Preview</h2>
-                        <p className="landing-section-sub" style={{ color: '#888' }}>
-                            This is what a first responder sees when they scan your QR code.
-                        </p>
-
-                        <div className="landing-emergency-mock">
-                            {/* Mock Header */}
-                            <div className="mock-header">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    <span style={{ fontSize: '1.25rem' }}>🚨</span>
-                                    <div>
-                                        <p style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,.7)', textTransform: 'uppercase' }}>Emergency Medical ID</p>
-                                        <p style={{ fontSize: '1.125rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>Alex Johnson · Age 34</p>
-                                    </div>
-                                </div>
-                                <div style={{ background: 'rgba(76,175,80,.2)', border: '1px solid rgba(76,175,80,.4)', borderRadius: 999, padding: '4px 12px', fontSize: '0.75rem', fontWeight: 700, color: '#81C784' }}>
-                                    ● Live
-                                </div>
-                            </div>
-
-                            {/* Mock Body */}
-                            <div className="mock-body">
-                                {/* Blood Group */}
-                                <div className="mock-blood-card">
-                                    <p className="mock-label">Blood Group</p>
-                                    <div className="mock-blood-type">O+</div>
-                                    <p style={{ color: '#666', fontSize: '0.8125rem' }}>For transfusion use</p>
-                                </div>
-
-                                <div style={{ flex: 1 }}>
-                                    {/* Critical Allergy */}
-                                    <div className="mock-allergy-alert">
-                                        <AlertTriangle size={16} color="#E53935" style={{ flexShrink: 0 }} />
-                                        <div>
-                                            <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#E53935', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>⚠ Life-Threatening Allergy</p>
-                                            <p style={{ fontWeight: 800, color: '#fff', fontSize: '1rem' }}>Penicillin</p>
-                                            <p style={{ color: '#aaa', fontSize: '0.8125rem' }}>Reaction: Anaphylaxis</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Medications */}
-                                    <div className="mock-info-row">
-                                        <Pill size={15} color="#90CAF9" style={{ flexShrink: 0 }} />
-                                        <div>
-                                            <p className="mock-label" style={{ marginBottom: 4 }}>Current Medications</p>
-                                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                                                {['Metformin 500mg', 'Atorvastatin 10mg'].map(m => (
-                                                    <span key={m} className="mock-tag">{m}</span>
-                                                ))}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 60, alignItems: 'center' }}>
+                            <div>
+                                <h2 style={{ color: 'white', marginBottom: 24 }}>Everything you need in one secure portal.</h2>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.125rem', marginBottom: 40 }}>
+                                    Our dashboard gives you full control over your emergency identity and privacy settings.
+                                </p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                                    {[
+                                        { icon: <Shield size={20} color="var(--blue-info)" />, title: "Emergency Mode Toggle", desc: "Instantly hide or show sensitive medical data." },
+                                        { icon: <Siren size={20} color="var(--red-mid)" />, title: "Accident Detection", desc: "Simulate emergency scenarios for peace of mind." },
+                                        { icon: <Activity size={20} color="var(--green-light)" />, title: "Access History", desc: "Track every time your QR code is scanned." }
+                                    ].map((item, i) => (
+                                        <div key={i} style={{ display: 'flex', gap: 16 }}>
+                                            <div style={{ flexShrink: 0, marginTop: 4 }}>{item.icon}</div>
+                                            <div>
+                                                <p style={{ color: 'white', fontWeight: 800, marginBottom: 4 }}>{item.title}</p>
+                                                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9375rem' }}>{item.desc}</p>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* Emergency Contact */}
-                                    <div className="mock-contact-row">
-                                        <div>
-                                            <p className="mock-label" style={{ marginBottom: 2 }}>Emergency Contact</p>
-                                            <p style={{ fontWeight: 700, color: '#fff', fontSize: '0.9375rem' }}>Sarah Johnson</p>
-                                            <p style={{ color: '#888', fontSize: '0.8125rem' }}>Spouse</p>
-                                        </div>
-                                        <a href="tel:+15550001234" className="btn btn-sm" style={{ background: '#4CAF50', color: '#fff', boxShadow: '0 4px 14px rgba(76,175,80,.35)', textDecoration: 'none' }}>
-                                            <Phone size={14} /> Call Now
-                                        </a>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
-
-                            <div className="mock-footer">
-                                <Zap size={13} color="#888" />
-                                <span>Public data · No login required · Powered by MediScan</span>
+                            <div className="animate-in" style={{ padding: 40, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 32 }}>
+                                <div className="card" style={{ background: 'white', border: 'none', padding: 24 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                                        <p style={{ fontWeight: 800, fontSize: '0.8125rem', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>CONTROL PANEL</p>
+                                        <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--green)' }} />
+                                    </div>
+                                    <div style={{ background: 'var(--surface-2)', height: 8, borderRadius: 4, width: '100%', marginBottom: 12 }} />
+                                    <div style={{ background: 'var(--surface-2)', height: 8, borderRadius: 4, width: '80%', marginBottom: 32 }} />
+                                    
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                                        <div style={{ background: 'var(--blue)', height: 80, borderRadius: 12 }} />
+                                        <div style={{ background: 'var(--surface-2)', height: 80, borderRadius: 12 }} />
+                                        <div style={{ background: 'var(--surface-2)', height: 80, borderRadius: 12 }} />
+                                        <div style={{ background: 'var(--red)', height: 80, borderRadius: 12 }} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ── Security & Privacy ── */}
-                <section className="landing-section" style={{ background: '#fff' }}>
-                    <div className="container-lg">
-                        <div className="landing-section-label" style={{ color: '#1565C0', borderColor: '#BBDEFB', background: 'var(--blue-light)' }}>
-                            Your Privacy Matters
-                        </div>
-                        <h2 className="landing-section-title">Security &amp; Privacy</h2>
-                        <p className="landing-section-sub">Your full medical record is never exposed publicly. A strict two-tier system keeps sensitive data protected.</p>
-
-                        <div className="landing-security-grid">
-                            <div className="landing-security-card" style={{ borderColor: 'rgba(229,57,53,.3)', background: 'linear-gradient(135deg, #fff5f5, #fff)' }}>
-                                <div className="landing-security-icon" style={{ background: 'var(--red-light)' }}>
-                                    <Eye size={22} color="#E53935" />
-                                </div>
-                                <h3 style={{ marginBottom: 10 }}>Public Tier — Instant Access</h3>
-                                <p style={{ fontSize: '0.9rem', lineHeight: 1.7 }}>
-                                    When a QR code is scanned, only critical emergency data is shown — blood group, life-threatening allergies, and a primary emergency contact. <strong>No login required.</strong>
-                                </p>
-                                <ul className="landing-security-list">
-                                    <li><BadgeCheck size={14} color="#E53935" /> Blood group &amp; age</li>
-                                    <li><BadgeCheck size={14} color="#E53935" /> Life-threatening allergies</li>
-                                    <li><BadgeCheck size={14} color="#E53935" /> Emergency contact name &amp; phone</li>
-                                </ul>
-                            </div>
-
-                            <div className="landing-security-card" style={{ borderColor: 'rgba(21,101,192,.3)', background: 'linear-gradient(135deg, #f0f7ff, #fff)' }}>
-                                <div className="landing-security-icon" style={{ background: 'var(--blue-light)' }}>
-                                    <Lock size={22} color="#1565C0" />
-                                </div>
-                                <h3 style={{ marginBottom: 10 }}>OTP-Protected — Extended Access</h3>
-                                <p style={{ fontSize: '0.9rem', lineHeight: 1.7 }}>
-                                    For full medical history, a one-time password (OTP) is sent to the patient's registered phone. Only verified medical personnel with OTP access can view complete records.
-                                </p>
-                                <ul className="landing-security-list">
-                                    <li><BadgeCheck size={14} color="#1565C0" /> Full medication list &amp; dosages</li>
-                                    <li><BadgeCheck size={14} color="#1565C0" /> Chronic conditions &amp; medical history</li>
-                                    <li><BadgeCheck size={14} color="#1565C0" /> All emergency contacts</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* ── CTA ── */}
-                <section style={{ padding: '72px 24px 88px', textAlign: 'center', background: 'linear-gradient(135deg, #E53935 0%, #b71c1c 100%)', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,.06)', pointerEvents: 'none' }} />
-                    <div style={{ position: 'absolute', bottom: -80, left: -40, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,.04)', pointerEvents: 'none' }} />
-                    <div style={{ position: 'relative' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)', borderRadius: 999, padding: '5px 14px', marginBottom: 20 }}>
-                            <Heart size={13} color="#fff" />
-                            <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fff' }}>Free Forever · No Credit Card</span>
-                        </div>
-                        <h2 style={{ color: '#fff', marginBottom: 14, fontSize: 'clamp(1.5rem, 4vw, 2.25rem)' }}>
-                            Be prepared for any emergency
-                        </h2>
-                        <p style={{ color: 'rgba(255,255,255,.8)', marginBottom: 36, fontSize: '1.0625rem' }}>
-                            It takes 5 minutes to set up. It could save your life.
+                {/* ── Footer CTA ── */}
+                <section style={{ padding: '80px 24px', textAlign: 'center', background: 'white' }}>
+                    <div className="container">
+                        <h2 style={{ marginBottom: 16 }}>Ready to be prepared?</h2>
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: 40 }}>
+                            Join thousands who trust MediScan for their emergency medical safety. It's free and always will be.
                         </p>
-                        <Link to="/signup" className="btn btn-lg" style={{ background: '#fff', color: 'var(--red)', fontWeight: 700, boxShadow: '0 8px 30px rgba(0,0,0,.2)' }}>
-                            Create Free Account <ChevronRight size={18} />
+                        <Link to="/signup" className="btn btn-primary btn-lg btn-full">
+                            Get Started Free
                         </Link>
                     </div>
                 </section>
@@ -378,20 +262,45 @@ export default function LandingPage() {
             </main>
 
             {/* ── Footer ── */}
-            <footer style={{ padding: '24px', background: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
-                <div className="container-lg" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                    <a className="navbar-brand" href="/" style={{ textDecoration: 'none' }}>
-                        <svg className="logo" viewBox="0 0 32 32" fill="none" style={{ width: 24, height: 24 }}>
-                            <rect width="32" height="32" rx="8" fill="#E53935" />
-                            <rect x="13" y="6" width="6" height="20" rx="2" fill="white" />
-                            <rect x="6" y="13" width="20" height="6" rx="2" fill="white" />
-                        </svg>
-                        <span style={{ fontSize: '0.9375rem' }}>Medi<em>Scan</em></span>
-                    </a>
-                    <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>© 2026 MediScan · Emergency Medical QR System</p>
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <Link to="/signup" style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textDecoration: 'none' }}>Get Started</Link>
-                        <Link to="/login" style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textDecoration: 'none' }}>Sign In</Link>
+            <footer style={{ padding: '48px 24px', background: 'var(--surface-2)', borderTop: '1px solid var(--border)' }}>
+                <div className="container-lg">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 40 }}>
+                        <div style={{ maxWidth: 280 }}>
+                            <Link className="navbar-brand" to="/" style={{ marginBottom: 20 }}>
+                                <div style={{ background: 'var(--blue)', borderRadius: 8, padding: 6, display: 'flex' }}>
+                                    <Activity size={18} color="white" />
+                                </div>
+                                <span>Medi<em>Scan</em></span>
+                            </Link>
+                            <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
+                                Modern emergency medical identification system providing peace of mind to individuals and clarity to responders.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 60, flexWrap: 'wrap' }}>
+                            <div>
+                                <p style={{ fontWeight: 800, fontSize: '0.8125rem', marginBottom: 20, color: 'var(--text-header)' }}>PRODUCT</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                    <Link to="/signup" style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Get Started</Link>
+                                    <Link to="/login" style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Login</Link>
+                                    <a href="#demo" style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>View Demo</a>
+                                </div>
+                            </div>
+                            <div>
+                                <p style={{ fontWeight: 800, fontSize: '0.8125rem', marginBottom: 20, color: 'var(--text-header)' }}>LEGAL</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Privacy Policy</span>
+                                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Terms of Service</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: 60, borderTop: '1px solid var(--border)', paddingTop: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>© 2026 MediScan Healthcare. All rights reserved.</p>
+                        <div style={{ display: 'flex', gap: 20 }}>
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--text-muted)', opacity: 0.2 }} />
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--text-muted)', opacity: 0.2 }} />
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--text-muted)', opacity: 0.2 }} />
+                        </div>
                     </div>
                 </div>
             </footer>

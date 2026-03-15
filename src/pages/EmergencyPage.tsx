@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, AlertTriangle, Shield, Loader, Pill, Activity, Info, CheckCircle2, User } from 'lucide-react';
+import { Phone, AlertTriangle, Shield, Loader, Pill, Activity, Info, CheckCircle2 } from 'lucide-react';
 import { getEmergencyData } from '../lib/mockData';
 import { sendEmergencyAlertEmail } from '../utils/email';
-import type { EmergencyFullData } from '../types';
+import type { EmergencyFullData, Allergy, Medication, Condition } from '../types';
 
 // ─── AI Medical Summary ───────────────────────────────────────────────────────
 
@@ -102,8 +102,8 @@ export default function EmergencyPage() {
     if (!data) return null;
 
     const isFullMode = data.emergencyMode;
-    const criticalAllergies = (data.allAllergies || []).filter(a => a.severity === 'Life-threatening');
-    const severeAllergies = (data.allAllergies || []).filter(a => a.severity === 'Severe');
+    const criticalAllergies = (data.allAllergies || []).filter((a: Allergy) => a.severity === 'Life-threatening');
+    const severeAllergies = (data.allAllergies || []).filter((a: Allergy) => a.severity === 'Severe');
     const aiSummary = generateMedicalSummary(data);
 
     return (
@@ -115,152 +115,177 @@ export default function EmergencyPage() {
                         <span style={{ color: '#fff', fontWeight: 800, fontSize: '0.8125rem', letterSpacing: '0.1em' }}>🚨 EMERGENCY MEDICAL ID</span>
                     </div>
                 </div>
-                <h1 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 4 }}>
+                <h1 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: 4 }}>
                     {data.fullName}
                 </h1>
-                <p style={{ color: 'rgba(255,255,255,.9)', fontSize: '1rem', fontWeight: 500 }}>
+                <p style={{ color: 'rgba(255,255,255,.9)', fontSize: '1.125rem', fontWeight: 500 }}>
                     {data.age ? `Age: ${data.age} years` : 'Age: Unknown'}
                 </p>
             </div>
 
             <div style={{ padding: '24px 20px 80px', maxWidth: 650, margin: '0 auto' }}>
 
-                {/* ── 1. ALLERGY ALERT BANNER (High Priority) ── */}
-                <div style={{ marginBottom: 20 }}>
+                {/* ── 1. ALLERGY ALERT BANNER (Critical Priority) ── */}
+                <div style={{ marginBottom: 24 }}>
                     {criticalAllergies.length > 0 ? (
                         <div style={{
-                            background: 'rgba(229,57,53,.15)', border: '2px solid #E53935',
-                            borderRadius: 14, padding: '16px', boxShadow: '0 4px 20px rgba(229,57,53,0.2)'
+                            background: 'rgba(229,57,53,.15)', border: '3px solid #E53935',
+                            borderRadius: 16, padding: '20px', boxShadow: '0 4px 30px rgba(229,57,53,0.3)'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                                <AlertTriangle size={22} color="#E53935" />
-                                <p style={{ color: '#E53935', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                                    CRITICAL ALLergy ALERT
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                                <AlertTriangle size={28} color="#E53935" />
+                                <p style={{ color: '#E53935', fontWeight: 900, fontSize: '1.125rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                    CRITICAL ALLERGY ALERT
                                 </p>
                             </div>
-                            {criticalAllergies.map(a => (
-                                <div key={a.id} style={{ display: 'flex', gap: 12, marginBottom: 8, paddingLeft: 4 }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E53935', marginTop: 9, flexShrink: 0 }} />
+                            {criticalAllergies.map((a: Allergy) => (
+                                <div key={a.id} style={{ display: 'flex', gap: 14, marginBottom: 12, paddingLeft: 4 }}>
+                                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E53935', marginTop: 10, flexShrink: 0 }} />
                                     <div>
-                                        <p style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff', lineHeight: 1.2 }}>{a.name}</p>
-                                        {a.reaction && <p style={{ color: '#ffcdd2', fontSize: '0.9375rem', marginTop: 2 }}>{a.reaction}</p>}
+                                        <p style={{ fontWeight: 900, fontSize: '1.5rem', color: '#fff', lineHeight: 1.2 }}>{a.name}</p>
+                                        {a.reaction && <p style={{ color: '#ffcdd2', fontSize: '1rem', marginTop: 4, fontWeight: 500 }}>Reaction: {a.reaction}</p>}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : severeAllergies.length > 0 ? (
                         <div style={{
-                            background: 'rgba(255,152,0,.12)', border: '1.5px solid #FF9800',
-                            borderRadius: 14, padding: '16px'
+                            background: 'rgba(255,152,0,.15)', border: '2px solid #FF9800',
+                            borderRadius: 16, padding: '20px'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                                <AlertTriangle size={20} color="#FF9800" />
-                                <p style={{ color: '#FF9800', fontWeight: 800, fontSize: '0.875rem', textTransform: 'uppercase' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                                <AlertTriangle size={24} color="#FF9800" />
+                                <p style={{ color: '#FF9800', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase' }}>
                                     Severe Allergy Warning
                                 </p>
                             </div>
-                            {severeAllergies.map(a => (
-                                <div key={a.id} style={{ marginBottom: 6 }}>
-                                    <p style={{ fontWeight: 800, fontSize: '1.125rem', color: '#fff' }}>{a.name}</p>
-                                    {a.reaction && <p style={{ color: '#FFE0B2', fontSize: '0.875rem' }}>{a.reaction}</p>}
+                            {severeAllergies.map((a: Allergy) => (
+                                <div key={a.id} style={{ marginBottom: 8 }}>
+                                    <p style={{ fontWeight: 900, fontSize: '1.25rem', color: '#fff' }}>{a.name}</p>
+                                    {a.reaction && <p style={{ color: '#FFE0B2', fontSize: '0.9375rem', marginTop: 2 }}>Reaction: {a.reaction}</p>}
                                 </div>
                             ))}
                         </div>
                     ) : (
                         <div style={{
-                            background: 'rgba(46,125,50,.1)', border: '1px solid rgba(46,125,50,0.3)',
-                            borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12
+                            background: 'rgba(46,125,50,0.1)', border: '1.5px solid rgba(46,125,50,0.3)',
+                            borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12
                         }}>
-                            <CheckCircle2 size={20} color="#4CAF50" />
-                            <p style={{ color: '#81C784', fontWeight: 600, fontSize: '1rem' }}>No known severe allergies reported.</p>
+                            <CheckCircle2 size={24} color="#4CAF50" />
+                            <p style={{ color: '#81C784', fontWeight: 700, fontSize: '1.125rem' }}>No known life-threatening allergies.</p>
                         </div>
                     )}
                 </div>
 
-                {/* ── 2. BLOOD GROUP ── */}
+                {/* ── 2. BLOOD GROUP (Vital Info) ── */}
                 <div style={{ 
-                    textAlign: 'center', padding: '24px 20px', 
-                    background: 'rgba(255,255,255,.03)', border: '1.5px solid rgba(255,255,255,.08)', 
-                    borderRadius: 20, marginBottom: 20 
+                    textAlign: 'center', padding: '32px 20px', 
+                    background: 'rgba(255,255,255,.04)', border: '1.5px solid rgba(255,255,255,.1)', 
+                    borderRadius: 24, marginBottom: 24
                 }}>
-                    <p style={{ color: '#888', fontSize: '0.8125rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: 10, textTransform: 'uppercase' }}>Patient Blood Group</p>
+                    <p style={{ color: '#aaa', fontSize: '0.875rem', fontWeight: 800, letterSpacing: '0.15em', marginBottom: 12, textTransform: 'uppercase' }}>Blood Group</p>
                     <div style={{ 
-                        fontSize: '3.5rem', fontWeight: 900, color: '#fff', lineHeight: 1,
-                        textShadow: '0 0 20px rgba(255,255,255,0.1)'
+                        fontSize: '4.5rem', fontWeight: 950, color: '#fff', lineHeight: 1,
+                        textShadow: '0 0 30px rgba(255,255,255,0.15)'
                     }} className="animate-pulse">
-                        {data.bloodGroup || '—'}
+                        {data.bloodGroup || 'UNK'}
                     </div>
                 </div>
 
-                {/* ── 3. EMERGENCY CONTACT CALL BUTTON ── */}
+                {/* ── 3. EMERGENCY CONTACT CALL BUTTON (Immediate Action) ── */}
                 {data.primaryEmergencyContact ? (
-                    <div style={{ marginBottom: 32 }}>
-                        <div style={{ background: 'rgba(76,175,80,.1)', border: '1.5px solid rgba(76,175,80,.25)', borderRadius: 16, padding: '18px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(76,175,80,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <User size={22} color="#4CAF50" />
+                    <div style={{ marginBottom: 40 }}>
+                        <div style={{ background: 'rgba(76,175,80,.12)', border: '2px solid rgba(76,175,80,.3)', borderRadius: 20, padding: '24px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+                                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(76,175,80,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Activity size={26} color="#4CAF50" />
                                 </div>
                                 <div>
-                                    <p style={{ color: '#fff', fontWeight: 700, fontSize: '1.0625rem' }}>{data.primaryEmergencyContact.name}</p>
-                                    <p style={{ color: '#888', fontSize: '0.875rem' }}>{data.primaryEmergencyContact.relationship} • Emergency Contact</p>
+                                    <p style={{ color: '#fff', fontWeight: 900, fontSize: '1.25rem' }}>{data.primaryEmergencyContact.name}</p>
+                                    <p style={{ color: '#aaa', fontSize: '1rem' }}>{data.primaryEmergencyContact.relationship} • Emergency Contact</p>
                                 </div>
                             </div>
                             <a
                                 href={`tel:${data.primaryEmergencyContact.phone}`}
                                 style={{
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                                    width: '100%', padding: '16px 24px', borderRadius: 12,
-                                    background: '#4CAF50', color: '#fff', fontWeight: 800,
-                                    fontSize: '1.125rem', textDecoration: 'none',
-                                    boxShadow: '0 8px 24px rgba(76,175,80,.35)',
-                                    transition: 'transform 0.2s',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
+                                    width: '100%', padding: '20px 24px', borderRadius: 16,
+                                    background: '#4CAF50', color: '#fff', fontWeight: 900,
+                                    fontSize: '1.5rem', textDecoration: 'none',
+                                    boxShadow: '0 12px 32px rgba(76,175,80,.4)',
+                                    transition: 'all 0.2s',
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                                    e.currentTarget.style.boxShadow = '0 16px 40px rgba(76,175,80,.5)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 12px 32px rgba(76,175,80,.4)';
+                                }}
                             >
-                                <Phone size={22} />
-                                CALL NOW: {data.primaryEmergencyContact.phone}
+                                <Phone size={28} />
+                                CALL CONTACT
                             </a>
                         </div>
                     </div>
                 ) : (
-                    <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: 12, textAlign: 'center', marginBottom: 32 }}>
-                        <p style={{ color: '#666', fontSize: '0.9375rem' }}>No emergency contact information provided.</p>
+                    <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', border: '2px dashed rgba(255,255,255,0.1)', borderRadius: 20, textAlign: 'center', marginBottom: 40 }}>
+                        <p style={{ color: '#888', fontSize: '1.125rem' }}>No emergency contact registered.</p>
                     </div>
                 )}
+
+                {/* ── 4. AI MEDICAL SUMMARY (Quick Context) ── */}
+                <div style={{
+                    background: 'linear-gradient(135deg, rgba(33,150,243,.1) 0%, rgba(33,150,243,0.03) 100%)',
+                    border: '2px solid rgba(33,150,243,.3)',
+                    borderRadius: 20, padding: '24px', marginBottom: 40
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(33,150,243,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Info size={18} color="#2196F3" />
+                        </div>
+                        <p style={{ color: '#2196F3', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                            Triage Summary
+                        </p>
+                    </div>
+                    <p style={{ color: '#fff', fontSize: '1.25rem', lineHeight: 1.5, fontWeight: 600 }}>
+                        "{aiSummary}"
+                    </p>
+                </div>
 
                 {/* ── MODE NOTICE ── */}
                 {!isFullMode && (
                     <div style={{
-                        background: 'rgba(33,150,243,.12)', border: '1px solid rgba(33,150,243,0.3)',
-                        borderRadius: 12, padding: '14px 16px', marginBottom: 32,
-                        display: 'flex', gap: 12, alignItems: 'center'
+                        background: 'rgba(33,150,243,.12)', border: '1.5px solid rgba(33,150,243,0.3)',
+                        borderRadius: 16, padding: '18px 24px', marginBottom: 40,
+                        display: 'flex', gap: 16, alignItems: 'center'
                     }}>
-                        <Shield size={18} color="#2196F3" style={{ flexShrink: 0 }} />
-                        <p style={{ color: '#90CAF9', fontSize: '0.9375rem', lineHeight: 1.5 }}>
-                            <strong>Private Profile:</strong> Patient has restricted access to full medical records. Contact their emergency contact for more details.
+                        <Shield size={24} color="#2196F3" style={{ flexShrink: 0 }} />
+                        <p style={{ color: '#90CAF9', fontSize: '1.0625rem', lineHeight: 1.5, fontWeight: 500 }}>
+                            <strong>Limited Visibility:</strong> Only public emergency data is shown. Full records are locked by the patient.
                         </p>
                     </div>
                 )}
 
-                {/* ── 4 & 5. MEDICATIONS & CONDITIONS (Full Mode Only) ── */}
-                {isFullMode ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginBottom: 32 }}>
+                {/* ── 5 & 6. MEDICATIONS & CONDITIONS (Detailed Clinical Data) ── */}
+                {isFullMode && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 40, marginBottom: 48 }}>
                         {/* Medications */}
                         <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                                <Pill size={18} color="#888" />
-                                <h3 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Medications</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                                <Pill size={22} color="#aaa" />
+                                <h3 style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Active Medications</h3>
                             </div>
                             {data.medications && data.medications.length > 0 ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-                                    {data.medications.map(m => (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+                                    {data.medications.map((m: Medication) => (
                                         <div key={m.id} style={{
-                                            background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)',
-                                            borderRadius: 12, padding: '16px'
+                                            background: 'rgba(255,255,255,.06)', border: '1.5px solid rgba(255,255,255,.1)',
+                                            borderRadius: 16, padding: '20px'
                                         }}>
-                                            <p style={{ fontWeight: 800, color: '#fff', fontSize: '1.0625rem', marginBottom: 4 }}>{m.name}</p>
-                                            <div style={{ display: 'flex', gap: 12, color: '#aaa', fontSize: '0.875rem' }}>
+                                            <p style={{ fontWeight: 900, color: '#fff', fontSize: '1.25rem', marginBottom: 6 }}>{m.name}</p>
+                                            <div style={{ display: 'flex', gap: 12, color: '#ccc', fontSize: '1rem', fontWeight: 500 }}>
                                                 <span>{m.dosage}</span>
                                                 <span style={{ color: '#444' }}>•</span>
                                                 <span>{m.frequency}</span>
@@ -269,72 +294,52 @@ export default function EmergencyPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <p style={{ color: '#555', padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    No active medications reported.
-                                </p>
+                                <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1.5px solid rgba(255,255,255,0.05)' }}>
+                                    <p style={{ color: '#777', fontSize: '1.0625rem', fontWeight: 500 }}>No active medications reported.</p>
+                                </div>
                             )}
                         </div>
 
                         {/* Conditions */}
                         <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                                <Activity size={18} color="#888" />
-                                <h3 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Medical Conditions</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                                <Activity size={22} color="#aaa" />
+                                <h3 style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Medical Conditions</h3>
                             </div>
                             {data.conditions && data.conditions.length > 0 ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-                                    {data.conditions.map(c => (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+                                    {data.conditions.map((c: Condition) => (
                                         <div key={c.id} style={{
-                                            background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)',
-                                            borderRadius: 12, padding: '16px'
+                                            background: 'rgba(255,255,255,.06)', border: '1.5px solid rgba(255,255,255,.1)',
+                                            borderRadius: 16, padding: '20px'
                                         }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                                                <p style={{ fontWeight: 800, color: '#fff', fontSize: '1.0625rem' }}>{c.name}</p>
-                                                {c.diagnosedYear && <span style={{ fontSize: '0.75rem', color: '#666', fontWeight: 700, background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: 4 }}>SINCE {c.diagnosedYear}</span>}
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                                <p style={{ fontWeight: 900, color: '#fff', fontSize: '1.25rem' }}>{c.name}</p>
+                                                {c.diagnosedYear && <span style={{ fontSize: '0.8125rem', color: '#999', fontWeight: 800, background: 'rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: 6 }}>EST. {c.diagnosedYear}</span>}
                                             </div>
-                                            {c.notes && <p style={{ color: '#888', fontSize: '0.875rem', lineHeight: 1.5 }}>{c.notes}</p>}
+                                            {c.notes && <p style={{ color: '#aaa', fontSize: '1rem', lineHeight: 1.5, fontWeight: 500 }}>{c.notes}</p>}
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <p style={{ color: '#555', padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    No known medical conditions reported.
-                                </p>
+                                <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1.5px solid rgba(255,255,255,0.05)' }}>
+                                    <p style={{ color: '#777', fontSize: '1.0625rem', fontWeight: 500 }}>No known medical conditions reported.</p>
+                                </div>
                             )}
                         </div>
                     </div>
-                ) : null}
-
-                {/* ── 6. AI MEDICAL SUMMARY ── */}
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(33,150,243,.08) 0%, rgba(33,150,243,0.02) 100%)',
-                    border: '1.5px solid rgba(33,150,243,.2)',
-                    borderRadius: 16, padding: '20px', marginBottom: 40
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(33,150,243,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Info size={16} color="#2196F3" />
-                        </div>
-                        <p style={{ color: '#2196F3', fontWeight: 800, fontSize: '0.8125rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                            Clinical Summary (AI Generated)
-                        </p>
-                    </div>
-                    <p style={{ color: '#CBD5E1', fontSize: '1.0625rem', lineHeight: 1.6, fontWeight: 500 }}>
-                        "{aiSummary}"
-                    </p>
-                </div>
+                )}
 
                 {/* Disclaimer */}
-                <div style={{ textAlign: 'center', maxWidth: 450, margin: '0 auto' }}>
-                    <p style={{ color: '#444', fontSize: '0.8125rem', lineHeight: 1.6, marginBottom: 24 }}>
+                <div style={{ textAlign: 'center', maxWidth: 480, margin: '0 auto', opacity: 0.6 }}>
+                    <p style={{ color: '#aaa', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: 24 }}>
                         This emergency medical ID profile was created by the patient. MediScan verifies identity but does not clinically audit medical data. Always use clinical judgment.
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                        <Link to="/login" className="btn btn-ghost btn-sm" style={{ color: '#666' }}>Patient Login</Link>
-                        <span style={{ color: '#222' }}>•</span>
-                        <Link to={`/doctor-access/${userId}`} className="btn btn-ghost btn-sm" style={{ color: '#666' }}>Request Extended Access</Link>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+                        <Link to="/login" className="btn btn-ghost btn-sm" style={{ color: '#fff', fontSize: '0.8125rem' }}>Patient Login</Link>
+                        <span style={{ color: '#333' }}>|</span>
+                        <Link to={`/doctor-access/${userId}`} className="btn btn-ghost btn-sm" style={{ color: '#fff', fontSize: '0.8125rem' }}>Professional Access</Link>
                     </div>
-                    <p style={{ color: '#333', fontSize: '0.75rem', marginTop: 32, fontWeight: 700, letterSpacing: '0.05em' }}>POWERED BY MEDISCAN EMERGENCY SERVICES</p>
                 </div>
             </div>
         </div>
