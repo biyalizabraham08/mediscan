@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import {
     Edit3, Download, LogOut, Clock, QrCode, Activity,
-    Shield, ShieldOff, Siren, MapPin, Bell, ExternalLink, Zap
+    Shield, ShieldOff, Siren, MapPin, Bell, ExternalLink, Zap, Smartphone
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getProfile, getAccessLogs, setEmergencyMode, logAccess } from '../lib/mockData';
 import { sendEmergencyAlertEmail } from '../utils/email';
 import { useAuth } from '../lib/auth';
@@ -60,6 +61,7 @@ export default function DashboardPage() {
     const [profile, setProfile] = useState<MedicalProfile | null>(null);
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [loading, setLoading] = useState(true);
+    const qrRef = useRef<HTMLDivElement>(null);
 
     const [emergencyMode, setEmergencyModeState] = useState(true);
     const [togglingMode, setTogglingMode] = useState(false);
@@ -140,6 +142,98 @@ export default function DashboardPage() {
         navigate('/');
     }
 
+    function downloadWallpaper() {
+        const svg = qrRef.current?.querySelector('svg');
+        if (!svg) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080; canvas.height = 1920;
+        const ctx = canvas.getContext('2d')!;
+
+        // 1. Dark Medical Gradient Background
+        const grad = ctx.createRadialGradient(540, 540, 0, 540, 540, 1500);
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Suble medical grid/dots pattern
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        for (let x = 0; x < canvas.width; x += 100) {
+            for (let y = 0; y < canvas.height; y += 100) {
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 2. Large Red Alert Banner at top
+        ctx.fillStyle = '#ef4444'; 
+        ctx.fillRect(0, 150, canvas.width, 300);
+        
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.font = '900 84px Inter, system-ui, sans-serif';
+        ctx.fillText('MEDICAL EMERGENCY', canvas.width / 2, 330);
+
+        // 3. QR Code Container
+        const qrSize = 650;
+        const qrX = (canvas.width - qrSize) / 2;
+        const qrY = 650;
+        
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        const radius = 60;
+        ctx.moveTo(qrX + radius, qrY);
+        ctx.lineTo(qrX + qrSize - radius, qrY);
+        ctx.quadraticCurveTo(qrX + qrSize, qrY, qrX + qrSize, qrY + radius);
+        ctx.lineTo(qrX + qrSize, qrY + qrSize - radius);
+        ctx.quadraticCurveTo(qrX + qrSize, qrY + qrSize, qrX + qrSize - radius, qrY + qrSize);
+        ctx.lineTo(qrX + radius, qrY + qrSize);
+        ctx.quadraticCurveTo(qrX, qrY + qrSize, qrX, qrY + qrSize - radius);
+        ctx.lineTo(qrX, qrY + radius);
+        ctx.quadraticCurveTo(qrX, qrY, qrX + radius, qrY);
+        ctx.closePath();
+        ctx.fill();
+
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgData], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, qrX + 50, qrY + 50, qrSize - 100, qrSize - 100);
+
+            // 4. Branding at bottom
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 80px Inter, system-ui, sans-serif';
+            ctx.fillText('MediScan', canvas.width / 2, 1450);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '500 48px Inter, system-ui, sans-serif';
+            ctx.fillText('Scan for critical health information', canvas.width / 2, 1530);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '400 36px Inter, system-ui, sans-serif';
+            ctx.fillText(profile?.fullName || '', canvas.width / 2, 1600);
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 32px Inter, system-ui, sans-serif';
+            ctx.fillText('ALWAYS ACCESSIBLE • OTP PROTECTED', canvas.width / 2, 1720);
+
+            const link = document.createElement('a');
+            link.download = `mediscan-wallpaper-${(profile?.fullName || 'user').replace(/\s+/g, '-')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success('Lock-screen wallpaper generated!');
+            toast('💡 Set this as your phone lock-screen wallpaper so emergency responders can scan it if you are unconscious.', {
+                duration: 6000,
+                icon: '📱',
+            });
+        };
+        img.src = url;
+    }
+
     if (loading) {
         return <div className="page-center"><span className="spinner spinner-dark" style={{ width: 32, height: 32 }} /></div>;
     }
@@ -216,15 +310,26 @@ export default function DashboardPage() {
 
                             {profile ? (
                                 <>
-                                    <div style={{ 
-                                        padding: 24, background: 'var(--surface-2)', 
-                                        borderRadius: 24, display: 'inline-block', 
-                                        marginBottom: 24, border: '1.5px solid var(--border)' 
-                                    }}>
+                                    <div 
+                                        ref={qrRef}
+                                        style={{ 
+                                            padding: 24, background: 'var(--surface-2)', 
+                                            borderRadius: 24, display: 'inline-block', 
+                                            marginBottom: 24, border: '1.5px solid var(--border)' 
+                                        }}
+                                    >
                                         <QRCodeSVG value={emergencyUrl} size={180} level="H" fgColor="var(--navy)" bgColor="transparent" />
                                     </div>
                                     <h3 style={{ marginBottom: 4 }}>{profile.fullName}</h3>
                                     <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: 20 }}>Blood Group: <span style={{ color: 'var(--red)', fontWeight: 800 }}>{profile.bloodGroup}</span></p>
+                                    
+                                    <button 
+                                        className="btn btn-secondary btn-full" 
+                                        style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0F172A', color: '#fff', borderColor: '#1e293b' }}
+                                        onClick={downloadWallpaper}
+                                    >
+                                        <Smartphone size={18} /> Get Lock-Screen Wallpaper
+                                    </button>
                                     
                                     <div style={{ padding: '16px', background: 'var(--surface-2)', borderRadius: 16, textAlign: 'left', border: '1px solid var(--border)' }}>
                                         <p style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', marginBottom: 4 }}>EMERGENCY LINK</p>

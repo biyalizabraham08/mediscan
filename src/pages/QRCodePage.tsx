@@ -63,14 +63,12 @@ export default function QRCodePage() {
 
         // 2. Large Red Alert Banner at top
         ctx.fillStyle = '#ef4444'; // red-500
-        ctx.fillRect(0, 200, canvas.width, 240);
+        ctx.fillRect(0, 150, canvas.width, 300);
         
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
-        ctx.font = 'bold 72px Inter, system-ui, sans-serif';
-        ctx.fillText('⚕ MEDICAL EMERGENCY', canvas.width / 2, 315);
-        ctx.font = '500 42px Inter, system-ui, sans-serif';
-        ctx.fillText('Scan for critical health information', canvas.width / 2, 385);
+        ctx.font = '900 84px Inter, system-ui, sans-serif';
+        ctx.fillText('MEDICAL EMERGENCY', canvas.width / 2, 330);
 
         // 3. QR Code Container (Rounded White Box)
         const qrSize = 650;
@@ -103,15 +101,19 @@ export default function QRCodePage() {
             // 4. Branding at bottom
             ctx.fillStyle = 'white';
             ctx.font = 'bold 80px Inter, system-ui, sans-serif';
-            ctx.fillText('MediScan', canvas.width / 2, 1600);
+            ctx.fillText('MediScan', canvas.width / 2, 1450);
             
+            ctx.fillStyle = 'white';
+            ctx.font = '500 48px Inter, system-ui, sans-serif';
+            ctx.fillText('Scan for critical health information', canvas.width / 2, 1530);
+
             ctx.fillStyle = 'rgba(255,255,255,0.6)';
             ctx.font = '400 36px Inter, system-ui, sans-serif';
-            ctx.fillText(profileName, canvas.width / 2, 1680);
+            ctx.fillText(profileName, canvas.width / 2, 1600);
             
             ctx.fillStyle = '#ef4444';
             ctx.font = 'bold 32px Inter, system-ui, sans-serif';
-            ctx.fillText('ALWAYS ACCESSIBLE • OTP PROTECTED', canvas.width / 2, 1780);
+            ctx.fillText('ALWAYS ACCESSIBLE • OTP PROTECTED', canvas.width / 2, 1720);
 
             const link = document.createElement('a');
             link.download = `mediscan-wallpaper-${profileName.replace(/\s+/g, '-')}.png`;
@@ -119,6 +121,10 @@ export default function QRCodePage() {
             link.click();
             URL.revokeObjectURL(url);
             toast.success('Lock-screen wallpaper generated!');
+            toast('💡 Set this as your phone lock-screen wallpaper so emergency responders can scan it if you are unconscious.', {
+                duration: 6000,
+                icon: '📱',
+            });
         };
         img.src = url;
     }
