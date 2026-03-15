@@ -136,7 +136,7 @@ export async function logout(): Promise<void> {
 // ─── PROFILE ──────────────────────────────────────────────────────────────────
 
 export async function saveProfile(profile: MedicalProfile): Promise<{ success: boolean; message: string }> {
-    const { error } = await supabase.from('profiles').upsert({
+    const data: any = {
         id: profile.userId,
         user_id: profile.userId,
         email: profile.email,
@@ -152,9 +152,23 @@ export async function saveProfile(profile: MedicalProfile): Promise<{ success: b
         emergency_mode: profile.emergencyMode ?? true,
         accident_detection_enabled: profile.accidentDetectionEnabled ?? false,
         updated_at: new Date().toISOString()
-    });
+    };
 
-    if (error) return { success: false, message: error.message };
+    const { error: firstError } = await supabase.from('profiles').upsert(data);
+
+    // If missing accident_detection_enabled column, retry without it
+    if (firstError?.message?.includes('accident_detection_enabled')) {
+        console.warn("Supabase: accident_detection_enabled column missing. Retrying without it.");
+        delete data.accident_detection_enabled;
+        const { error: secondError } = await supabase.from('profiles').upsert(data);
+        if (secondError) return { success: false, message: secondError.message };
+        return { success: true, message: 'Profile saved (without accident detection setting).' };
+    }
+
+    if (firstError) {
+        console.error("Supabase SaveProfile Error:", firstError.message);
+        return { success: false, message: firstError.message };
+    }
     return { success: true, message: 'Profile saved successfully.' };
 }
 
