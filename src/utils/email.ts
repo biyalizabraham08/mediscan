@@ -19,16 +19,15 @@ export async function sendOTPEmail(
     if (!serviceId || !templateId || !publicKey) return;
 
     try {
-        emailjs.init(publicKey);
         await emailjs.send(serviceId, templateId, {
-            to_email: email,
+            email: email,
             to_name: email,
             user_email: email,
             recipient: email,
             otp_code: otp,
             expiry_time: formattedExpiry,
             message: `Your MediScan OTP is ${otp}. Valid until ${formattedExpiry}.`
-        });
+        }, publicKey);
     } catch (error) {
         void error;
     }
@@ -64,7 +63,6 @@ export async function sendEmergencyAlertEmail(
     const defaultMessage = `URGENT: ${patientName}'s emergency medical profile was just accessed via their MediScan QR code at ${accessTime}.${locationNotice}\n\nThey may need immediate assistance. Please check on them right away.`;
 
     try {
-        emailjs.init(publicKey);
         await emailjs.send(serviceId, alertTemplateId, {
             email: contactEmail,
             to_name: contactName,
@@ -72,7 +70,7 @@ export async function sendEmergencyAlertEmail(
             access_time: accessTime,
             message: customMessage || defaultMessage,
             location: location || 'Not provided',
-        });
+        }, publicKey);
         
         // SMS Preparation (Future Integration)
         // Structured for Twilio/Firebase: await sendEmergencySMS(phone, patientName, location);
@@ -122,7 +120,6 @@ export async function sendAccidentAlertEmail(
     const message = `URGENT: An accident may have been detected involving ${patientName}.\n\nThe MediScan accident detection system was triggered from their device at ${accessTime}.${locationNotice}\n\nPlease try contacting them immediately.`;
 
     try {
-        emailjs.init(publicKey);
         await emailjs.send(serviceId, alertTemplateId, {
             email: contactEmail,
             to_name: contactName,
@@ -130,7 +127,7 @@ export async function sendAccidentAlertEmail(
             access_time: accessTime,
             message: message,
             location: location || 'Detecting...'
-        });
+        }, publicKey);
     } catch (error) {
         void error;
     }
