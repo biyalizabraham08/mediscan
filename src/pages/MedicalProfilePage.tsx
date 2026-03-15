@@ -184,7 +184,7 @@ export default function MedicalProfilePage() {
                     </SectionCard>
 
                     {/* ── Allergies ── */}
-                    <SectionCard color="#E53935" dot="#E53935" title="Allergies" count={profile.allergies.length}>
+                    <SectionCard color="#B91C1C" dot="#B91C1C" title="Allergies" count={profile.allergies.length}>
                         <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                             {profile.allergies.map(a => (
                                 <div key={a.id} style={{ background: 'var(--surface-2)', borderRadius: 'var(--radius-sm)', padding: '12px 14px' }}>

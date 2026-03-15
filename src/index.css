@@ -166,7 +166,7 @@ p  { color: var(--text-secondary); }
 
 /* ── Emergency View ── */
 .emergency-page { background: #0A0D14; min-height: 100vh; color: #fff; font-family: 'Inter', sans-serif; }
-.emergency-header { background: var(--red); padding: 32px 24px; border-bottom: 4px solid var(--red-dark); }
+.emergency-header { background: var(--blue); padding: 32px 24px; border-bottom: 4px solid var(--blue-dark); }
 
 /* ── Animations ── */
 @keyframes fadeInSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -224,7 +224,7 @@ p  { color: var(--text-secondary); }
 .landing-hero-glow {
   position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
   width: 700px; height: 700px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(229,57,53,.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(30, 64, 175, 0.05) 0%, transparent 70%);
   pointer-events: none;
 }
 .landing-headline {
@@ -243,9 +243,9 @@ p  { color: var(--text-secondary); }
 }
 .landing-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  background: #fff; border: 1.5px solid #fecdd3; border-radius: 999px;
+  background: #fff; border: 1.5px solid #dbeafe; border-radius: 999px;
   padding: 6px 16px; margin-bottom: 26px;
-  font-size: 0.8125rem; font-weight: 600; color: #E53935;
+  font-size: 0.8125rem; font-weight: 600; color: var(--blue);
 }
 .landing-cta-group {
   display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
@@ -266,8 +266,8 @@ p  { color: var(--text-secondary); }
 .landing-section { padding: 80px 24px; }
 .landing-section-label {
   display: inline-block;
-  background: var(--red-light); border: 1px solid #fecdd3;
-  color: var(--red); border-radius: 999px;
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  color: var(--blue); border-radius: 999px;
   font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
   text-transform: uppercase; padding: 5px 14px; margin-bottom: 16px;
 }
@@ -301,7 +301,7 @@ p  { color: var(--text-secondary); }
 }
 .landing-step-num {
   position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-  background: var(--red); color: #fff;
+  background: var(--blue); color: #fff;
   font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em;
   padding: 4px 12px; border-radius: 999px;
 }
@@ -329,7 +329,7 @@ p  { color: var(--text-secondary); }
 .landing-feature-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
-  border-color: #E53935;
+  border-color: var(--blue);
 }
 .landing-feature-icon {
   width: 48px; height: 48px; border-radius: 14px;
@@ -340,12 +340,12 @@ p  { color: var(--text-secondary); }
 /* ── Emergency Mock ── */
 .landing-emergency-mock {
   max-width: 640px; margin: 0 auto;
-  border: 1.5px solid rgba(229,57,53,.4);
+  border: 1.5px solid rgba(30, 64, 175, 0.2);
   border-radius: var(--radius-xl); overflow: hidden;
-  box-shadow: 0 0 60px rgba(229,57,53,.15);
+  box-shadow: 0 0 60px rgba(30, 64, 175, 0.1);
 }
 .mock-header {
-  background: var(--red); padding: 18px 20px;
+  background: var(--blue); padding: 18px 20px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .mock-body {
@@ -359,7 +359,7 @@ p  { color: var(--text-secondary); }
 }
 .mock-blood-type {
   font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 900; line-height: 1;
-  color: var(--red); letter-spacing: -0.04em;
+  color: var(--blue); letter-spacing: -0.04em;
   animation: pulse 2s ease-in-out infinite;
 }
 .mock-label {

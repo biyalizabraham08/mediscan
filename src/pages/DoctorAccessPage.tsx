@@ -179,7 +179,7 @@ export default function DoctorAccessPage() {
                         {data.allAllergies.length > 0 && (
                             <div style={{ background: 'rgba(255,255,255,.05)', borderRadius: 12, padding: '18px', marginBottom: 16 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                                    <AlertTriangle size={16} color="#E53935" />
+                                    <AlertTriangle size={16} color="#B91C1C" />
                                     <p style={{ color: '#aaa', fontSize: '0.8125rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>All Allergies</p>
                                 </div>
                                 {data.allAllergies.map(a => (
@@ -200,7 +200,7 @@ export default function DoctorAccessPage() {
                         {data.conditions.length > 0 && (
                             <div style={{ background: 'rgba(255,255,255,.05)', borderRadius: 12, padding: '18px', marginBottom: 16 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                                    <Heart size={16} color="#E53935" />
+                                    <Heart size={16} color="#B91C1C" />
                                     <p style={{ color: '#aaa', fontSize: '0.8125rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Medical Conditions</p>
                                 </div>
                                 {data.conditions.map(c => (

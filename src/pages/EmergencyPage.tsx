@@ -104,7 +104,7 @@ export default function EmergencyPage() {
     if (loading) {
         return (
             <div className="emergency-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-                <Loader size={36} color="#E53935" style={{ animation: 'spin 1s linear infinite' }} />
+                <Loader size={36} color="#1E40AF" style={{ animation: 'spin 1s linear infinite' }} />
                 <p style={{ color: '#888' }}>Loading emergency info…</p>
             </div>
         );
@@ -114,7 +114,7 @@ export default function EmergencyPage() {
         return (
             <div className="emergency-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
                 <div style={{ textAlign: 'center', maxWidth: 360 }}>
-                    <AlertTriangle size={48} color="#E53935" style={{ marginBottom: 16 }} />
+                    <AlertTriangle size={48} color="#1E40AF" style={{ marginBottom: 16 }} />
                     <h1 style={{ fontSize: '1.5rem', marginBottom: 8 }}>Profile Not Found</h1>
                     <p style={{ color: '#888', marginBottom: 24 }}>{error}</p>
                     <Link to="/" className="btn btn-primary">Go to MediScan</Link>
@@ -168,18 +168,18 @@ export default function EmergencyPage() {
                 <div style={{ marginBottom: 24 }}>
                     {criticalAllergies.length > 0 ? (
                         <div style={{
-                            background: 'rgba(229,57,53,.15)', border: '3px solid #E53935',
-                            borderRadius: 16, padding: '20px', boxShadow: '0 4px 30px rgba(229,57,53,0.3)'
+                            background: 'rgba(185,28,28,0.1)', border: '3px solid #B91C1C',
+                            borderRadius: 16, padding: '20px', boxShadow: '0 4px 30px rgba(185,28,28,0.2)'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                                <AlertTriangle size={28} color="#E53935" />
-                                <p style={{ color: '#E53935', fontWeight: 900, fontSize: '1.125rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                                <AlertTriangle size={28} color="#B91C1C" />
+                                <p style={{ color: '#B91C1C', fontWeight: 900, fontSize: '1.125rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                                     CRITICAL ALLERGY ALERT
                                 </p>
                             </div>
                             {criticalAllergies.map((a: Allergy) => (
                                 <div key={a.id} style={{ display: 'flex', gap: 14, marginBottom: 12, paddingLeft: 4 }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E53935', marginTop: 10, flexShrink: 0 }} />
+                                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#B91C1C', marginTop: 10, flexShrink: 0 }} />
                                     <div>
                                         <p style={{ fontWeight: 900, fontSize: '1.5rem', color: '#fff', lineHeight: 1.2 }}>{a.name}</p>
                                         {a.reaction && <p style={{ color: '#ffcdd2', fontSize: '1rem', marginTop: 4, fontWeight: 500 }}>Reaction: {a.reaction}</p>}

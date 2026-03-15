@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')!).render(
             boxShadow: '0 8px 24px rgba(0,0,0,.12)',
           },
           success: { iconTheme: { primary: '#2E7D32', secondary: '#fff' } },
-          error: { iconTheme: { primary: '#E53935', secondary: '#fff' } },
+          error: { iconTheme: { primary: '#B91C1C', secondary: '#fff' } },
         }}
       />
     </AuthProvider>

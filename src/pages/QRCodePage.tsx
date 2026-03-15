@@ -142,8 +142,8 @@ export default function QRCodePage() {
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Red header
-        ctx.fillStyle = '#E53935';
+        // Medical Blue header
+        ctx.fillStyle = '#1E40AF';
         ctx.fillRect(0, 0, size, 50);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 20px Inter, sans-serif';
