@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, AlertTriangle, Shield, Loader, Pill, Activity, Info, CheckCircle2 } from 'lucide-react';
+import { Phone, AlertTriangle, Shield, Loader, Pill, Activity, Info, CheckCircle2, MapPin, Eye, EyeOff } from 'lucide-react';
 import { getEmergencyData } from '../lib/mockData';
 import { sendEmergencyAlertEmail } from '../utils/email';
 import type { EmergencyFullData, Allergy, Medication, Condition } from '../types';
@@ -51,7 +51,32 @@ export default function EmergencyPage() {
     const [data, setData] = useState<EmergencyFullData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [hospitalMode, setHospitalMode] = useState(false);
+    const [location, setLocation] = useState<string>('');
     const alertSent = useRef(false);
+
+    // Geolocation detection
+    useEffect(() => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                try {
+                    const { latitude, longitude } = pos.coords;
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`);
+                    const json = await res.json();
+                    const addr = json.address;
+                    const city = addr.city || addr.town || addr.village || addr.suburb || '';
+                    const country = addr.country || '';
+                    const locStr = city ? `${city}, ${country}` : country;
+                    if (locStr) setLocation(locStr);
+                } catch (err) {
+                    console.error("Location detection failed:", err);
+                }
+            },
+            null,
+            { timeout: 5000 }
+        );
+    }, []);
 
     useEffect(() => {
         if (!userId) { setError('Invalid emergency link.'); setLoading(false); return; }
@@ -60,16 +85,15 @@ export default function EmergencyPage() {
             else {
                 setData(res.data);
                 // Fire-and-forget emergency contact alert (once per page load)
-                if (!alertSent.current && res.data.primaryEmergencyContact) {
+                if (!alertSent.current && (res.data.primaryEmergencyContact?.email || res.data.primaryEmergencyContact?.phone)) {
                     alertSent.current = true;
-                    const accessTime = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                    const alertMsg = `⚠️ URGENT: ${res.data.fullName}'s emergency medical ID was just accessed via a QR code scan at ${accessTime}.\n\nThis usually means someone is providing them with emergency assistance. Please check on them immediately.`;
                     
                     sendEmergencyAlertEmail(
-                        res.data.primaryEmergencyContact.phone, // best-effort using phone
+                        res.data.primaryEmergencyContact.email || res.data.primaryEmergencyContact.phone,
                         res.data.primaryEmergencyContact.name,
                         res.data.fullName,
-                        alertMsg
+                        undefined,
+                        location || 'Detecting...'
                     );
                 }
             }
@@ -121,6 +145,21 @@ export default function EmergencyPage() {
                 <p style={{ color: 'rgba(255,255,255,.9)', fontSize: '1.125rem', fontWeight: 500 }}>
                     {data.age ? `Age: ${data.age} years` : 'Age: Unknown'}
                 </p>
+
+                {/* Hospital Mode Toggle */}
+                <button 
+                    onClick={() => setHospitalMode(!hospitalMode)}
+                    style={{
+                        marginTop: 16, display: 'flex', alignItems: 'center', gap: 8,
+                        background: hospitalMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                        border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8,
+                        padding: '6px 12px', color: '#fff', fontSize: '0.875rem', fontWeight: 600,
+                        cursor: 'pointer', transition: 'all 0.2s'
+                    }}
+                >
+                    {hospitalMode ? <Eye size={16} /> : <EyeOff size={16} />}
+                    {hospitalMode ? 'Standard View' : 'Hospital Mode (Triage)'}
+                </button>
             </div>
 
             <div style={{ padding: '24px 20px 80px', maxWidth: 650, margin: '0 auto' }}>
@@ -236,26 +275,41 @@ export default function EmergencyPage() {
                 )}
 
                 {/* ── 4. AI MEDICAL SUMMARY (Quick Context) ── */}
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(33,150,243,.1) 0%, rgba(33,150,243,0.03) 100%)',
-                    border: '2px solid rgba(33,150,243,.3)',
-                    borderRadius: 20, padding: '24px', marginBottom: 40
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(33,150,243,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Info size={18} color="#2196F3" />
+                {!hospitalMode && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(33,150,243,.1) 0%, rgba(33,150,243,0.03) 100%)',
+                        border: '2px solid rgba(33,150,243,.3)',
+                        borderRadius: 20, padding: '24px', marginBottom: 40
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(33,150,243,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Info size={18} color="#2196F3" />
+                            </div>
+                            <p style={{ color: '#2196F3', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                                Triage Summary
+                            </p>
                         </div>
-                        <p style={{ color: '#2196F3', fontWeight: 900, fontSize: '0.9375rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                            Triage Summary
+                        <p style={{ color: '#fff', fontSize: '1.25rem', lineHeight: 1.5, fontWeight: 600 }}>
+                            "{aiSummary}"
                         </p>
                     </div>
-                    <p style={{ color: '#fff', fontSize: '1.25rem', lineHeight: 1.5, fontWeight: 600 }}>
-                        "{aiSummary}"
-                    </p>
-                </div>
+                )}
+
+                {/* Location Detection Banner */}
+                {location && (
+                    <div style={{
+                        background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '12px 20px',
+                        display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40, border: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                        <MapPin size={18} color="#aaa" />
+                        <p style={{ color: '#aaa', fontSize: '0.9375rem', fontWeight: 500 }}>
+                            Detected Location: <span style={{ color: '#fff' }}>{location}</span>
+                        </p>
+                    </div>
+                )}
 
                 {/* ── MODE NOTICE ── */}
-                {!isFullMode && (
+                {!isFullMode && !hospitalMode && (
                     <div style={{
                         background: 'rgba(33,150,243,.12)', border: '1.5px solid rgba(33,150,243,0.3)',
                         borderRadius: 16, padding: '18px 24px', marginBottom: 40,

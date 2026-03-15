@@ -99,7 +99,7 @@ export default function MedicalProfilePage() {
     function removeMedication(id: string) { set('medications', profile.medications.filter(m => m.id !== id)); }
 
     // Contact helpers
-    function addContact() { set('emergencyContacts', [...profile.emergencyContacts, { id: generateId(), name: '', relationship: '', phone: '' }]); }
+    function addContact() { set('emergencyContacts', [...profile.emergencyContacts, { id: generateId(), name: '', relationship: '', phone: '', email: '' }]); }
     function updateContact(id: string, field: keyof EmergencyContact, val: string) {
         set('emergencyContacts', profile.emergencyContacts.map(c => c.id === id ? { ...c, [field]: val } : c));
     }
@@ -289,9 +289,13 @@ export default function MedicalProfilePage() {
                                             <label className="form-label" style={{ fontSize: '0.8125rem' }}>Relationship</label>
                                             <input className="input" placeholder="Spouse" value={c.relationship} onChange={e => updateContact(c.id, 'relationship', e.target.value)} />
                                         </div>
-                                        <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                        <div className="form-group">
                                             <label className="form-label" style={{ fontSize: '0.8125rem' }}>Phone Number</label>
                                             <input className="input" type="tel" placeholder="+1-555-0100" value={c.phone} onChange={e => updateContact(c.id, 'phone', e.target.value)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label" style={{ fontSize: '0.8125rem' }}>Email Address</label>
+                                            <input className="input" type="email" placeholder="jane@example.com" value={c.email || ''} onChange={e => updateContact(c.id, 'email', e.target.value)} />
                                         </div>
                                     </div>
                                     <button type="button" className="btn btn-danger btn-sm" style={{ marginTop: 8 }} onClick={() => removeContact(c.id)}>

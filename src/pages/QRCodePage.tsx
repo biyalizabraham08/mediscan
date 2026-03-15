@@ -34,6 +34,95 @@ export default function QRCodePage() {
         });
     }, [userId, authLoading, navigate]);
 
+    function downloadWallpaper() {
+        const svg = qrRef.current?.querySelector('svg');
+        if (!svg) return;
+
+        const canvas = document.createElement('canvas');
+        // Standard phone aspect ratio (approx 9:19.5 or 9:16)
+        // 1080x1920 is a safe base
+        canvas.width = 1080; canvas.height = 1920;
+        const ctx = canvas.getContext('2d')!;
+
+        // 1. Dark Medical Gradient Background
+        const grad = ctx.createRadialGradient(540, 540, 0, 540, 540, 1500);
+        grad.addColorStop(0, '#1e293b'); // slate-800
+        grad.addColorStop(1, '#0f172a'); // slate-900
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Suble medical grid/dots pattern (optional enhancement)
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        for (let x = 0; x < canvas.width; x += 100) {
+            for (let y = 0; y < canvas.height; y += 100) {
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 2. Large Red Alert Banner at top
+        ctx.fillStyle = '#ef4444'; // red-500
+        ctx.fillRect(0, 200, canvas.width, 240);
+        
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 72px Inter, system-ui, sans-serif';
+        ctx.fillText('⚕ MEDICAL EMERGENCY', canvas.width / 2, 315);
+        ctx.font = '500 42px Inter, system-ui, sans-serif';
+        ctx.fillText('Scan for critical health information', canvas.width / 2, 385);
+
+        // 3. QR Code Container (Rounded White Box)
+        const qrSize = 650;
+        const qrX = (canvas.width - qrSize) / 2;
+        const qrY = 650;
+        
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        const radius = 60;
+        ctx.moveTo(qrX + radius, qrY);
+        ctx.lineTo(qrX + qrSize - radius, qrY);
+        ctx.quadraticCurveTo(qrX + qrSize, qrY, qrX + qrSize, qrY + radius);
+        ctx.lineTo(qrX + qrSize, qrY + qrSize - radius);
+        ctx.quadraticCurveTo(qrX + qrSize, qrY + qrSize, qrX + qrSize - radius, qrY + qrSize);
+        ctx.lineTo(qrX + radius, qrY + qrSize);
+        ctx.quadraticCurveTo(qrX, qrY + qrSize, qrX, qrY + qrSize - radius);
+        ctx.lineTo(qrX, qrY + radius);
+        ctx.quadraticCurveTo(qrX, qrY, qrX + radius, qrY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Overlay QR
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgData], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, qrX + 50, qrY + 50, qrSize - 100, qrSize - 100);
+
+            // 4. Branding at bottom
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 80px Inter, system-ui, sans-serif';
+            ctx.fillText('MediScan', canvas.width / 2, 1600);
+            
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '400 36px Inter, system-ui, sans-serif';
+            ctx.fillText(profileName, canvas.width / 2, 1680);
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 32px Inter, system-ui, sans-serif';
+            ctx.fillText('ALWAYS ACCESSIBLE • OTP PROTECTED', canvas.width / 2, 1780);
+
+            const link = document.createElement('a');
+            link.download = `mediscan-wallpaper-${profileName.replace(/\s+/g, '-')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success('Lock-screen wallpaper generated!');
+        };
+        img.src = url;
+    }
+
     function downloadQR() {
         const svg = qrRef.current?.querySelector('svg');
         if (!svg) return;
@@ -144,6 +233,9 @@ export default function QRCodePage() {
                     <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
                         <button className="btn btn-primary btn-lg" onClick={downloadQR}>
                             <Download size={18} /> Download QR
+                        </button>
+                        <button className="btn btn-secondary btn-lg" onClick={downloadWallpaper} style={{ background: '#0F172A', color: '#fff', borderColor: '#1e293b' }}>
+                            <Smartphone size={18} /> Get Wallpaper
                         </button>
                         <button className="btn btn-secondary btn-lg" onClick={handleShare}>
                             <Share2 size={18} /> Share Link

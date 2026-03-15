@@ -43,7 +43,8 @@ export async function sendEmergencyAlertEmail(
     contactEmail: string,
     contactName: string,
     patientName: string,
-    customMessage?: string
+    customMessage?: string,
+    location?: string
 ) {
     const serviceId = import.meta.env?.VITE_EMAILJS_SERVICE_ID;
     const alertTemplateId = import.meta.env?.VITE_EMAILJS_ALERT_TEMPLATE_ID;
@@ -56,7 +57,8 @@ export async function sendEmergencyAlertEmail(
         timeStyle: "short",
     });
 
-    const defaultMessage = `URGENT: ${patientName}'s emergency medical profile was just accessed via their MediScan QR code at ${accessTime}. They may need immediate assistance. Please check on them right away.`;
+    const locationNotice = location ? `\n\nApproximate Location: ${location}` : "";
+    const defaultMessage = `URGENT: ${patientName}'s emergency medical profile was just accessed via their MediScan QR code at ${accessTime}.${locationNotice}\n\nThey may need immediate assistance. Please check on them right away.`;
 
     try {
         emailjs.init(publicKey);
@@ -66,6 +68,7 @@ export async function sendEmergencyAlertEmail(
             patient_name: patientName,
             access_time: accessTime,
             message: customMessage || defaultMessage,
+            location: location || 'Not provided',
         });
     } catch (error) {
         void error; // silently fail — alert is best-effort
