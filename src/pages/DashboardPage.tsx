@@ -6,7 +6,7 @@ import {
     Shield, ShieldOff, Siren, MapPin, Bell, ExternalLink, Zap, Smartphone
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getProfile, getAccessLogs, setEmergencyMode, logAccess, saveProfile } from '../lib/mockData';
+import { getProfile, getAccessLogs, setEmergencyMode, logAccess } from '../lib/mockData';
 import { sendAccidentAlertEmail } from '../utils/email';
 import { useAuth } from '../lib/auth';
 import type { MedicalProfile, AccessLog } from '../types';
@@ -67,7 +67,6 @@ export default function DashboardPage() {
     const [emergencyMode, setEmergencyModeState] = useState(true);
     const [togglingMode, setTogglingMode] = useState(false);
 
-    const [accidentDetectionEnabled, setAccidentDetectionEnabled] = useState(false);
     const [showCountdown, setShowCountdown] = useState(false);
     const [accidentAlert, setAccidentAlert] = useState('');
     const cooldownRef = useRef<number>(0);
@@ -76,15 +75,18 @@ export default function DashboardPage() {
 
     useEffect(() => {
         Promise.all([getProfile(userId), getAccessLogs(userId)]).then(([p, l]) => {
-            setProfile(p);
-            if (p) setEmergencyModeState(p.emergencyMode !== false);
+            if (p) {
+                setProfile(p);
+                setEmergencyModeState(p.emergencyMode);
+            }
             setLogs(l);
             setLoading(false);
         });
     }, [userId]);
 
     useEffect(() => {
-        if (!accidentDetectionEnabled) return;
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (!isMobile) return;
         
         let lastAccelTotal = 0;
         const threshold = 28; // High threshold for crash/impact
@@ -107,13 +109,15 @@ export default function DashboardPage() {
 
         window.addEventListener('devicemotion', handler as EventListener);
         return () => window.removeEventListener('devicemotion', handler as EventListener);
-    }, [accidentDetectionEnabled]);
+    }, []);
 
     async function handleAccidentConfirm() {
         setShowCountdown(false);
         setAccidentAlert('🚨 Emergency alert sent to your contact!');
         cooldownRef.current = Date.now(); // Start cooldown
 
+        // Activate Emergency Mode successfully
+        await setEmergencyMode(userId, true);
         await logAccess(userId, 'accident_detected', 'public');
 
         if (profile?.emergencyContacts?.[0] && profile.fullName) {
@@ -129,23 +133,51 @@ export default function DashboardPage() {
 
         const freshLogs = await getAccessLogs(userId);
         setLogs(freshLogs);
-
-        setTimeout(() => setAccidentAlert(''), 8000);
     }
 
-    async function toggleAccidentDetection(enabled: boolean) {
-        if (!profile) return;
-        setAccidentDetectionEnabled(enabled);
-        await saveProfile({ ...profile, accidentDetectionEnabled: enabled });
-        toast.success(`Accident detection ${enabled ? 'enabled' : 'disabled'}`);
+    async function handleManualSOS() {
+        if (showCountdown) return;
+        
+        const confirmSOS = window.confirm("Send emergency alert to your contact immediately?");
+        if (!confirmSOS) return;
+
+        setAccidentAlert('🚨 Sending SOS signal...');
+        
+        // Activate Emergency Mode & Log
+        await setEmergencyMode(userId, true);
+        await logAccess(userId, 'manual_sos', 'public');
+
+        if (profile?.emergencyContacts?.[0] && profile.fullName) {
+            const contact = profile.emergencyContacts[0];
+            if (contact.email) {
+                await sendAccidentAlertEmail(
+                    contact.email,
+                    contact.name,
+                    profile.fullName
+                );
+            }
+        }
+
+        const freshLogs = await getAccessLogs(userId);
+        setLogs(freshLogs);
+        setAccidentAlert('🚨 Emergency alert sent to your contact.');
+        setTimeout(() => setAccidentAlert(''), 5000);
     }
 
-    async function handleEmergencyModeToggle(enabled: boolean) {
+    async function toggleEmergencyMode(enabled: boolean) {
         setTogglingMode(true);
         const res = await setEmergencyMode(userId, enabled);
         if (res.success) setEmergencyModeState(enabled);
         setTogglingMode(false);
     }
+
+    // toggleAccidentDetection is no longer needed as it's always enabled
+    // async function toggleAccidentDetection(enabled: boolean) {
+    //     if (!profile) return;
+    //     setAccidentDetectionEnabled(enabled);
+    //     await saveProfile({ ...profile, accidentDetectionEnabled: enabled });
+    //     toast.success(`Accident detection ${enabled ? 'enabled' : 'disabled'}`);
+    // }
 
     function handleLogout() {
         logout();
@@ -410,7 +442,7 @@ export default function DashboardPage() {
                                     <div style={{ width: 40, height: 40, borderRadius: 12, background: emergencyMode ? 'rgba(30, 64, 175, 0.1)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         {emergencyMode ? <Shield size={20} color="var(--blue)" /> : <ShieldOff size={20} color="var(--text-muted)" />}
                                     </div>
-                                    <Toggle checked={emergencyMode} onChange={handleEmergencyModeToggle} disabled={togglingMode} />
+                                    <Toggle checked={emergencyMode} onChange={toggleEmergencyMode} disabled={togglingMode} />
                                 </div>
                                 <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Emergency Mode</h3>
                                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -420,32 +452,45 @@ export default function DashboardPage() {
                                 </p>
                             </div>
 
-                            {/* Accident Detection Toggle */}
-                            <div className="card" style={{ borderLeft: `4px solid ${accidentDetectionEnabled ? '#FF9800' : 'var(--border)'}` }}>
+                            {/* Accident Guard Card (Always Active) */}
+                            <div className="card" style={{ borderLeft: `4px solid #4CAF50` }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: accidentDetectionEnabled ? 'rgba(255, 152, 0, 0.1)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Bell size={20} color={accidentDetectionEnabled ? '#FF9800' : 'var(--text-muted)'} />
+                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(76, 175, 80, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Bell size={20} color="#4CAF50" />
                                     </div>
-                                    <Toggle checked={accidentDetectionEnabled} onChange={toggleAccidentDetection} />
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)', padding: '4px 8px', borderRadius: 20 }}>ACTIVE</span>
                                 </div>
-                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Auto-Alert</h3>
+                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Accident Guard</h3>
                                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                                    {accidentDetectionEnabled 
-                                        ? 'Monitoring motion sensors for sudden impact.' 
-                                        : 'Automatic impact detection is currently disabled.'}
+                                    Automatic impact detection is active. We will notify your contact if a crash is detected.
                                 </p>
                             </div>
-                        </div>
 
-                        {/* Simulated Accident Action */}
-                        {accidentDetectionEnabled && (
-                            <div className="card" style={{ background: 'linear-gradient(135deg, white 0%, #FFF9F2 100%)', border: '1.5px dashed #FF9800' }}>
-                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <Zap size={16} color="#FF9800" /> Test System
-                                        </h4>
-                                        <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Trigger a mock emergency to verify your email alerts are working.</p>
+                            {/* Manual SOS Card */}
+                            <div className="card" style={{ padding: 20 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(244, 67, 54, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Siren size={20} color="var(--red)" />
+                                    </div>
+                                    <button 
+                                        onClick={handleManualSOS}
+                                        className="btn"
+                                        style={{ background: 'var(--red)', color: 'white', fontSize: '0.75rem', padding: '6px 12px', borderRadius: 8 }}
+                                    >
+                                        SOS NOW
+                                    </button>
+                                </div>
+                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Manual SOS</h3>
+                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                    Tap "SOS NOW" to alert your contact immediately if you need help.
+                                </p>
+                            </div>
+
+                            {/* ── Simulation Card ── */}
+                            <div className="card" style={{ padding: 20 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Zap size={20} color="#FF9800" />
                                     </div>
                                     <button 
                                         onClick={() => setShowCountdown(true)}
@@ -453,11 +498,13 @@ export default function DashboardPage() {
                                         className="btn btn-secondary btn-sm"
                                         style={{ borderColor: '#FF9800', color: '#E65100' }}
                                     >
-                                        {showCountdown ? 'Countdown Active' : 'Test Alert'}
+                                        Test Alert
                                     </button>
                                 </div>
+                                <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>Test System</h3>
+                                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Trigger a mock emergency to verify your email alerts are working.</p>
                             </div>
-                        )}
+                        </div>
 
                         {/* Recent Access Log */}
                         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>

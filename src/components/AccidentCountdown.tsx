@@ -10,7 +10,7 @@ interface AccidentCountdownProps {
 export default function AccidentCountdown({ 
     onCancel, 
     onConfirm, 
-    countdownTime = 10 
+    countdownTime = 15 
 }: AccidentCountdownProps) {
     const [timeLeft, setTimeLeft] = useState(countdownTime);
 
@@ -44,10 +44,11 @@ export default function AccidentCountdown({
             </div>
 
             <h1 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: 16 }}>
-                Accident Detected!
+                ⚠ Possible Accident Detected
             </h1>
             <p style={{ fontSize: '1.25rem', marginBottom: 40, maxWidth: 500, lineHeight: 1.5 }}>
-                A sudden impact was detected. Sending emergency alert to your contacts in:
+                MediScan detected a sudden impact from your device. <br/>
+                If you are safe, cancel the alert. Otherwise, an emergency notification will be sent to your contact.
             </p>
 
             <div style={{
@@ -79,7 +80,7 @@ export default function AccidentCountdown({
                         border: '2px solid rgba(255,255,255,0.3)', borderRadius: 16
                     }}
                 >
-                    <Siren size={20} style={{ marginRight: 8 }} /> Send Alert Now
+                    <Siren size={20} style={{ marginRight: 8 }} /> Send Emergency Alert Now
                 </button>
             </div>
 
