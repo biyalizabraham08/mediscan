@@ -181,32 +181,82 @@ p  { color: var(--text-secondary); }
   border-color: rgba(0,0,0,.15); border-top-color: var(--blue);
 }
 
+/* ── OTP Segmented Input ── */
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.otp-input {
+  width: 52px;
+  height: 64px;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-header);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+.otp-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.12), var(--shadow);
+  transform: translateY(-2px);
+  outline: none;
+}
+.otp-input.filled {
+  border-color: var(--blue);
+  background: #f0f7ff;
+}
+
+/* ── Profile Section Styling ── */
+.profile-section {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.profile-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-header);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.profile-item-card {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+}
+
 /* ── Responsive Overrides ── */
 @media (max-width: 768px) {
   .navbar { padding: 0 16px; }
   .navbar-brand span { font-size: 1.125rem; }
   .card { padding: 24px 20px; }
+  .profile-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
   .btn { padding: 12px 20px; width: 100%; }
   .card { padding: 20px 16px; }
-  .otp-input { width: 44px; height: 52px; font-size: 1.25rem; }
-}
-
-/* ── Toast override ── */
-.react-hot-toast { font-family: var(--font) !important; }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #b0bac9; }
-
-/* ── Responsive ── */
-@media (max-width: 480px) {
-  .card { padding: 20px 16px; }
-  .otp-input { width: 44px; height: 52px; font-size: 1.25rem; }
+  .otp-input { width: 42px; height: 56px; font-size: 1.5rem; gap: 8px; }
+  .otp-inputs { gap: 8px; }
 }
 
 /* ══════════════════════════════════════

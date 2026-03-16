@@ -97,54 +97,66 @@ export default function OTPVerifyPage() {
         <div className="page-center" style={{ background: 'linear-gradient(160deg, #f8f9fc 0%, #eef2ff 100%)' }}>
             <div className="container animate-in" style={{ maxWidth: 440 }}>
                 <Link to="/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none', marginBottom: 24, fontWeight: 500 }}>
-                    <ArrowLeft size={16} /> Back
+                    <ArrowLeft size={16} /> Back to Sign Up
                 </Link>
 
-                <div style={{ textAlign: 'center', marginBottom: 28 }}>
-                    <div style={{ width: 56, height: 56, borderRadius: '12px', background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 16px rgba(30,64,175,0.2)' }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="white" strokeWidth="2" />
-                            <path d="M22 6l-10 7L2 6" stroke="white" strokeWidth="2" />
+                <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                    <div style={{ width: 64, height: 64, borderRadius: '16px', background: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: 'var(--shadow-blue)' }}>
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 6l-10 7L2 6" />
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
                         </svg>
                     </div>
-                    <h2 style={{ marginBottom: 6 }}>Check your email</h2>
-                    <p style={{ fontSize: '0.9375rem' }}>
-                        We sent a 6-digit code to<br />
-                        <strong style={{ color: 'var(--text-primary)' }}>{email || 'your email'}</strong>
+                    <h2 style={{ marginBottom: 8, fontSize: '1.75rem' }}>Verify Your Email</h2>
+                    <p style={{ fontSize: '0.9375rem', lineHeight: 1.5 }}>
+                        Enter the 6-digit code sent to<br />
+                        <strong style={{ color: 'var(--blue)' }}>{email || 'your email'}</strong>
                     </p>
                 </div>
 
-                <div className="card">
-                    <div className="otp-inputs" onPaste={handlePaste} style={{ marginBottom: 24 }}>
-                        {otp.map((val, idx) => (
-                            <input
-                                key={idx}
-                                ref={el => { inputRefs.current[idx] = el; }}
-                                className={`otp-input ${val ? 'filled' : ''}`}
-                                type="text" inputMode="numeric" maxLength={1}
-                                value={val}
-                                onChange={e => handleChange(idx, e.target.value)}
-                                onKeyDown={e => handleKeyDown(idx, e)}
-                            />
-                        ))}
+                <div className="card" style={{ padding: '32px 24px' }}>
+                    <div className="form-group" style={{ marginBottom: 28 }}>
+                        <label className="form-label" style={{ textAlign: 'center', display: 'block', marginBottom: 16 }}>Verification Code</label>
+                        <div className="otp-inputs" onPaste={handlePaste}>
+                            {otp.map((val, idx) => (
+                                <input
+                                    key={idx}
+                                    ref={el => { inputRefs.current[idx] = el; }}
+                                    className={`otp-input ${val ? 'filled' : ''}`}
+                                    type="text" 
+                                    inputMode="numeric" 
+                                    maxLength={1}
+                                    value={val}
+                                    autoFocus={idx === 0}
+                                    onChange={e => handleChange(idx, e.target.value)}
+                                    onKeyDown={e => handleKeyDown(idx, e)}
+                                    placeholder="•"
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     <button className="btn btn-primary btn-full btn-lg" onClick={handleVerify} disabled={loading}>
-                        {loading ? <><span className="spinner" />Verifying…</> : 'Verify Email →'}
+                        {loading ? <><span className="spinner" /> Verifying Code...</> : 'Verify & Continue →'}
                     </button>
 
-                    <div style={{ textAlign: 'center', marginTop: 20 }}>
+                    <div style={{ textAlign: 'center', marginTop: 24, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
                         {timer > 0 ? (
                             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                                Resend code in <strong style={{ color: 'var(--text-primary)' }}>{timer}s</strong>
+                                Didn't receive code? Resend in <strong style={{ color: 'var(--blue)' }}>{timer}s</strong>
                             </p>
                         ) : (
                             <button className="btn btn-ghost btn-sm" onClick={handleResend} disabled={resending} style={{ margin: '0 auto' }}>
-                                <RefreshCw size={14} /> {resending ? 'Resending…' : 'Resend OTP'}
+                                <RefreshCw size={14} className={resending ? 'animate-spin' : ''} /> 
+                                {resending ? 'Sending...' : 'Resend Verification Code'}
                             </button>
                         )}
                     </div>
                 </div>
+
+                <p style={{ textAlign: 'center', marginTop: 24, fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+                    Make sure to check your spam folder if you don't see the email within a minute.
+                </p>
             </div>
         </div>
     );
