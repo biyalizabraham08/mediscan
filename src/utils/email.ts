@@ -16,20 +16,27 @@ export async function sendOTPEmail(
         hour12: false,
     });
 
-    if (!serviceId || !templateId || !publicKey) return;
+    if (!serviceId || !templateId || !publicKey) {
+        console.error("EmailJS Configuration Missing:", { serviceId, templateId, publicKey });
+        return;
+    }
+
+    console.log("Attempting to send OTP email to:", email);
 
     try {
         await emailjs.send(serviceId, templateId, {
             email: email,
+            to_email: email,
             to_name: email,
             user_email: email,
             recipient: email,
+            reply_to: 'support@mediscan.com',
             otp_code: otp,
             expiry_time: formattedExpiry,
             message: `Your MediScan OTP is ${otp}. Valid until ${formattedExpiry}.`
         }, publicKey);
-    } catch (error) {
-        void error;
+    } catch (error: any) {
+        console.error("EmailJS OTP Send Error:", error);
     }
 }
 
@@ -64,11 +71,13 @@ export async function sendEmergencyAlertEmail(
 
     const payload = {
         email: contactEmail,
+        to_email: contactEmail,
         to_name: contactName,
         patient_name: patientName,
         access_time: accessTime,
         message: customMessage || defaultMessage,
         location: location || 'Not provided',
+        reply_to: 'emergency@mediscan.com',
     };
 
     try {
@@ -122,11 +131,13 @@ export async function sendAccidentAlertEmail(
 
     const payload = {
         email: contactEmail,
+        to_email: contactEmail,
         to_name: contactName,
         patient_name: patientName,
         access_time: accessTime,
         message: message,
-        location: location || 'Detecting...'
+        location: location || 'Detecting...',
+        reply_to: 'alerts@mediscan.com',
     };
 
     try {
