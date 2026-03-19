@@ -1,43 +1,62 @@
 <div align="center">
-  <img src="public/logo-512.png" width="128" alt="MediScan Logo" />
+  <img src="public/favicon.svg" width="128" alt="MediScan Logo" />
   <h1>MediScan</h1>
   <p><i>Emergency Medical ID System</i></p>
+
+  <p>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+  </p>
 </div>
 
-# MediScan
-
-MediScan is a professional web application designed to provide instant access to critical medical information during emergencies. By scanning a unique QR code, first responders can retrieve a linked medical profile stored securely in a Supabase database. The application also features an integrated emergency SOS alert for rapid data access.
+MediScan is a QR-based medical identification system designed for rapid information retrieval in emergency scenarios. By scanning a unique patient ID, responders can instantly access critical medical data synchronized across a secure cloud infrastructure.
 
 ### 🔗 Live Demo
 [View Live Demo](https://mediscan-delta.vercel.app)
 
-### 🚀 Features
-- **QR Code Scanning**: Instant retrieval of linked medical data via unique QR codes.
-- **Emergency SOS Alert**: One-touch access to critical information in high-pressure scenarios.
-- **Secure Medical Profiles**: Managed medical records with real-time data synchronization.
-- **Responsive Dashboard**: Optimized for both mobile and desktop views.
+### ⚠️ Important Note
+MediScan is a technical demonstration and is **not** a production-grade medical record system. It has not undergone clinical auditing or regulatory compliance (e.g., HIPAA). All medical data is user-reported and should be verified by authorized medical personnel using standard protocols.
 
-### 🛠 Tech Stack
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-- **Frontend**: React.js, JavaScript, HTML, CSS
-- **Backend/Database**: Supabase (PostgreSQL, Real-time APIs)
-- **Deployment**: Vercel
+### 🧪 Test QR / Demo Data
+To review the system's output without creating an account, you can use the following profile data for testing:
+- **Test User**: Biya
+- **Blood Group**: O+
+- **Allergies**: No known allergies
+- **Emergency Contact**: Tamil (9361472469)
+
+### 🚀 Key Features
+- **Dynamic QR Retrieval**: Unique patient identifiers mapped to real-time cloud records.
+- **Accident Guard / SOS Alert**: Automatic impact detection with a 15-second cancellation window.
+- **Managed Medical Profiles**: Structured storage for clinical data including severe allergies and medications.
+- **Role-Based Access**: Toggleable visibility for professional and public views.
+
+### 🚨 SOS Alert Behavior
+When an impact is detected or the SOS is manually triggered:
+1. **Critical Overlay**: A high-visibility countdown appears on the device.
+2. **Notification Pipeline**: If not canceled within 15 seconds, pre-configured emergency contacts are notified via secure email alerts.
+3. **Emergency State**: The patient's profile displays a prioritized "CRITICAL ALERT" banner and elevates the visibility of life-saving data.
+
+### 📌 Key Medical Data Displayed
+Responders are presented with a prioritized view of:
+- **Vital Information**: Blood group and age.
+- **High-Priority Alerts**: Life-threatening and severe allergies.
+- **Clinical Context**: Existing medical conditions and active medications.
+- **Actionable Contacts**: Direct-dial buttons for primary emergency contacts.
 
 ### 📁 Project Structure
 ```text
 mediscan/
-├── public/             # Static assets (logos, icons)
+├── public/             # Static assets and PWA manifest
+├── screenshots/        # Application UI demonstrations
 ├── src/
-│   ├── assets/         # App-specific images and styles
-│   ├── components/     # Reusable UI components (e.g., SOS Countdown)
+│   ├── components/     # UI components (SOS Countdown, Profile Cards)
 │   ├── lib/            # Supabase client and Auth logic
-│   ├── pages/          # Main application screens (Dashboard, Profiles)
-│   ├── types/          # TypeScript definitions
-│   └── utils/          # Utility functions (e.g., Email alerts)
-├── .env.example        # Environment variable template
-└── package.json        # Project dependencies and scripts
+│   ├── pages/          # Application screens (Dashboard, Emergency View)
+│   ├── utils/          # Logic for location detection and email alerts
+│   └── types/          # TypeScript interface definitions
+├── .env.example        # Environment configuration template
+└── package.json        # Dependencies and build scripts
 ```
 
 ### 📸 Screenshots
@@ -45,54 +64,37 @@ mediscan/
 *User Dashboard with QR Code and SOS Controls*
 
 ![Medical Profile](screenshots/profile.png)
-*Detailed Medical Profile with Emergency Contacts*
+*Emergency Profile View with Contact Integration*
 
 ### ⚙️ Setup Instructions
-To run this project locally, follow these steps:
-
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/biyalizabraham08/mediscan.git
    cd mediscan
    ```
-
 2. **Install Dependencies**:
    ```bash
    npm install
    ```
-
 3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory based on `.env.example`.
-
-4. **Start the Development Server**:
+   Create a `.env` file based on `.env.example`.
+4. **Start Development**:
    ```bash
    npm run dev
    ```
 
 ### 🔑 Environment Variables
-The application requires the following Supabase credentials:
+Replace the placeholders in your `.env` file with your actual project credentials:
 ```env
-VITE_SUPABASE_URL=https://xbsyleowkfgabuqkvked.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhic3lsZW93a2ZnYWJ1cWt2a2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MjY4NjgsImV4cCI6MjA1Nzk5Mjg2OH0.98322z371Y889k0l4l512891289128912891289
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### 🔍 How It Works
-1. **Registration**: The user creates an account and sets up their medical profile.
-2. **Profile Mapping**: Medical details are stored in Supabase with a unique identifier.
-3. **QR Generation**: A unique QR code is generated, linking to the user's secure profile.
-4. **Emergency Retrieval**: A responder scans the code, which triggers a real-time fetch from Supabase to display critical data or initiate an SOS alert.
-
-### 🚑 Use Cases
-- **Emergency Response**: Providing first responders with immediate access to blood types and allergies.
-- **Health Management**: Keeping a digital and accessible record of personal medical history.
-
-### ⚠️ Limitations
-- **Internet Dependency**: Real-time data retrieval requires an active network connection.
-- **Manual Data Entry**: The accuracy of the medical profile depends on the user's manual input.
-
-### 🔮 Future Improvements
-- **Offline Access**: Implementing PWA capabilities for cached data retrieval.
-- **Wearable Integration**: Linking with smartwatches for automated SOS triggers.
+1. **Authentication**: Users establish identity through a secure login flow.
+2. **Data Ingestion**: Clinical details are ingested and stored as structured records in Supabase.
+3. **Identifier Mapping**: Profiles are hashed to unique IDs, which are used to generate scannable QR codes.
+4. **Real-Time Retrieval**: Scanning triggers an API call that fetches the latest profile state, ensuring zero-latency updates for critical alerts.
 
 ### ✍️ Author
 [Biya Liza Abraham](https://github.com/biyalizabraham08)
