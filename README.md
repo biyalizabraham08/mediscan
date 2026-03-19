@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# MediScan: Emergency Medical ID
+[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/biyalizabraham08/mediscan)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MediScan provides a secure, fast, and reliable way to create a digital medical profile that is instantly accessible via a QR code. In an emergency, first responders can scan the code to get life-saving information like blood type, critical allergies, and emergency contacts, bridging the crucial information gap when every second counts.
 
-Currently, two official plugins are available:
+## Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+*   **Secure Medical Profile:** Store your critical data, including blood group, allergies (with severity), medical conditions, current medications, and emergency contacts.
+*   **Instant QR Code Access:** Generate a unique QR code to place on a phone lock screen, wallet card, or sticker. The app includes a tool to create a custom lock screen wallpaper with your QR code.
+*   **Smart Accident Detection:** Utilizes your device's motion sensors to detect a potential fall or crash. If an impact is detected, it initiates a countdown to automatically alert your emergency contacts unless canceled.
+*   **Tiered Access Control:**
+    *   **Public View:** Displays essential, life-saving information for immediate response by anyone.
+    *   **Professional Access:** Allows verified medical professionals to view your complete medical history after requesting a one-time password (OTP) sent securely to you.
+*   **Automated Email Alerts:** Instantly notifies your emergency contacts via EmailJS when your QR code is scanned or a potential accident is detected.
+*   **Comprehensive User Dashboard:** A central hub to manage your profile, view a detailed log of every profile access (including location, if available), toggle data visibility, and test the alert system.
+*   **PWA Ready:** Installable on mobile devices for quick, app-like access, with offline fallback capabilities provided by a service worker.
 
-## React Compiler
+## How It Works
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1.  **Sign Up:** Create a secure account using your email and a password.
+2.  **Build Your Profile:** Fill in your essential medical details and add one or more emergency contacts.
+3.  **Generate Your QR Code:** Download your unique QR code as a standalone image or as a custom-designed phone lock screen wallpaper.
+4.  **Stay Prepared:** In an emergency, responders can scan this QR code to view your public medical profile and immediately contact your loved ones.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+*   **Frontend:** React, TypeScript, Vite
+*   **Backend & Database:** Supabase
+*   **Email Notifications:** EmailJS
+*   **Routing:** React Router
+*   **QR Generation:** `qrcode.react`
+*   **State Management:** React Context API
+*   **UI/Styling:** Custom CSS with a modern, responsive design system.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started: Local Development
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Follow these steps to set up and run MediScan on your local machine.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 1. Prerequisites
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+*   Node.js (v18 or later)
+*   npm or a compatible package manager
+*   A Supabase account
+*   An EmailJS account
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/biyalizabraham08/mediscan.git
+    cd mediscan
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+### 3. Environment Configuration
+
+1.  Create a `.env` file in the project root by copying the example file:
+    ```bash
+    cp .env.example .env
+    ```
+
+2.  **Configure Supabase:**
+    *   Create a new project on [Supabase](https://supabase.com/).
+    *   Go to **Project Settings > API**.
+    *   Copy the **Project URL** and the `anon` **public key**.
+    *   Paste them into your `.env` file:
+      ```env
+      VITE_SUPABASE_URL=your_supabase_project_url
+      VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+      ```
+
+3.  **Configure EmailJS:**
+    *   Log in to your [EmailJS](https://www.emailjs.com/) dashboard.
+    *   Add a new email service (e.g., Gmail).
+    *   Create two email templates: one for OTPs and one for emergency alerts. The templates must accept the variables defined in `src/utils/email.ts`.
+    *   Find your **Service ID**, **Template IDs**, and **Public Key** and add them to your `.env` file.
+
+### 4. Database Setup
+
+1.  In your Supabase project dashboard, navigate to the **SQL Editor**.
+2.  You must create the `profiles`, `otps`, and `access_logs` tables. The required SQL commands to define the schema can be inferred from the application's data structures and diagnostic scripts.
+3.  **Crucially**, disable the **Confirm email** feature in Supabase for the custom OTP flow to work correctly. Go to **Authentication > Providers > Email** and turn off the "Confirm email" toggle.
+
+### 5. Run the Application
+
+1.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
+
+2.  **Run the Supabase diagnostic script (optional):**
+    To verify your database connection and table setup, run:
+    ```bash
+    node check-supabase.mjs
+    ```
+
+## Available Scripts
+
+*   `npm run dev`: Starts the Vite development server with Hot Module Replacement.
+*   `npm run build`: Compiles the TypeScript code and builds the application for production.
+*   `npm run lint`: Runs ESLint to analyze the code for potential errors.
+*   `npm run preview`: Starts a local server to preview the production build.
