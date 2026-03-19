@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="public/logo-512.png" width="128" alt="MediScan Logo" />
+  <h1>MediScan</h1>
+  <p><i>Emergency Medical ID System</i></p>
+</div>
+
 # MediScan
 
 MediScan is a professional web application designed to provide instant access to critical medical information during emergencies. By scanning a unique QR code, first responders can retrieve a linked medical profile stored securely in a Supabase database. The application also features an integrated emergency SOS alert for rapid data access.
