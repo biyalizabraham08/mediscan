@@ -1,107 +1,85 @@
-# MediScan: Emergency Medical ID
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/biyalizabraham08/mediscan)
+<div align="center">
+  <img src="public/logo-512.png" width="128" alt="Mediscan Logo" />
+  <h1>Mediscan</h1>
+  <p><i>Reliable Medical Information for Emergency Situations</i></p>
+  
+  <p>
+    <img src="https://img.shields.io/badge/Stack-React%20%2B%20Supabase-blue?style=for-the-badge" alt="Stack" />
+    <img src="https://img.shields.io/badge/Deployment-Vercel-black?style=for-the-badge" alt="Vercel" />
+    <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
+  </p>
+</div>
 
-MediScan provides a secure, fast, and reliable way to create a digital medical profile that is instantly accessible via a QR code. In an emergency, first responders can scan the code to get life-saving information like blood type, critical allergies, and emergency contacts, bridging the crucial information gap when every second counts.
+Mediscan is a professional web application designed to bridge the information gap in medical emergencies. By scanning a unique QR code, first responders can instantly retrieve critical medical data stored securely in a real-time database.
 
-## Key Features
+## Overview
+Mediscan provides a streamlined interface for users to manage their medical profiles and generate accessible QR codes. The system ensures that life-saving information—such as blood type, allergies, and emergency contacts—is available exactly when it's needed most.
 
-*   **Secure Medical Profile:** Store your critical data, including blood group, allergies (with severity), medical conditions, current medications, and emergency contacts.
-*   **Instant QR Code Access:** Generate a unique QR code to place on a phone lock screen, wallet card, or sticker. The app includes a tool to create a custom lock screen wallpaper with your QR code.
-*   **Smart Accident Detection:** Utilizes your device's motion sensors to detect a potential fall or crash. If an impact is detected, it initiates a countdown to automatically alert your emergency contacts unless canceled.
-*   **Tiered Access Control:**
-    *   **Public View:** Displays essential, life-saving information for immediate response by anyone.
-    *   **Professional Access:** Allows verified medical professionals to view your complete medical history after requesting a one-time password (OTP) sent securely to you.
-*   **Automated Email Alerts:** Instantly notifies your emergency contacts via EmailJS when your QR code is scanned or a potential accident is detected.
-*   **Comprehensive User Dashboard:** A central hub to manage your profile, view a detailed log of every profile access (including location, if available), toggle data visibility, and test the alert system.
-*   **PWA Ready:** Installable on mobile devices for quick, app-like access, with offline fallback capabilities provided by a service worker.
+## Features
+- **Instant QR Generation**: Generate unique QR codes for phone lock screens or physical cards.
+- **Secure Medical Profiles**: Store and update critical health information in a structured format.
+- **Real-time Synchronization**: Instant updates to medical data across all scanned instances.
+- **Emergency Dashboard**: A dedicated view for quick data retrieval during critical situations.
+- **Responsive Design**: Optimized for mobile devices used by first responders on the field.
+
+## Tech Stack
+- **Frontend**: [React](https://reactjs.org/) (Vite)
+- **Backend/Database**: [Supabase](https://supabase.com/)
+- **Deployment**: [Vercel](https://vercel.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **QR Generation**: [qrcode.react](https://www.npmjs.com/package/qrcode.react)
 
 ## How It Works
 
-1.  **Sign Up:** Create a secure account using your email and a password.
-2.  **Build Your Profile:** Fill in your essential medical details and add one or more emergency contacts.
-3.  **Generate Your QR Code:** Download your unique QR code as a standalone image or as a custom-designed phone lock screen wallpaper.
-4.  **Stay Prepared:** In an emergency, responders can scan this QR code to view your public medical profile and immediately contact your loved ones.
+<div align="center">
+  <h3>🔄 Real-time Data Retrieval</h3>
+  <p><i>Subtle animations indicate active data fetching and synchronization</i></p>
+</div>
 
-## Tech Stack
+1. **Profile Creation**: Users sign up and input their essential medical details.
+2. **QR Generation**: The app generates a unique identifier mapped to the user's Supabase record.
+3. **Data Retrieval**: When scanned, the app fetches the most recent data directly from Supabase APIs.
+4. **Real-time Updates**: Any changes made by the user are instantly reflected on the scan result page.
 
-*   **Frontend:** React, TypeScript, Vite
-*   **Backend & Database:** Supabase
-*   **Email Notifications:** EmailJS
-*   **Routing:** React Router
-*   **QR Generation:** `qrcode.react`
-*   **State Management:** React Context API
-*   **UI/Styling:** Custom CSS with a modern, responsive design system.
+## Setup
+To run Mediscan locally:
 
-## Getting Started: Local Development
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/mediscan.git
+   cd mediscan
+   ```
 
-Follow these steps to set up and run MediScan on your local machine.
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### 1. Prerequisites
+3. **Configure the environment**:
+   Create a `.env` file in the root directory (see [Environment Variables](#environment-variables)).
 
-*   Node.js (v18 or later)
-*   npm or a compatible package manager
-*   A Supabase account
-*   An EmailJS account
+4. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
 
-### 2. Installation
+## Environment Variables
+The application requires the following Supabase credentials to function:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/biyalizabraham08/mediscan.git
-    cd mediscan
-    ```
+| Variable | Description |
+| :--- | :--- |
+| `VITE_SUPABASE_URL` | Your Supabase Project URL |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase Anonymous API Key |
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+## Limitations
+- **Connectivity**: Requires an active internet connection to fetch real-time data from Supabase.
+- **Data Dependency**: Information accuracy is dependent on the data provided by the user.
+- **Scan Environment**: QR code readability depends on the physical condition of the code and ambient lighting.
 
-### 3. Environment Configuration
+## Future Improvements
+- **Offline Mode**: Local caching of profile data for environments with poor connectivity.
+- **Multi-language Support**: Expanding accessibility for international users.
+- **Integration**: Secure data sharing with wearable health devices.
 
-1.  Create a `.env` file in the project root by copying the example file:
-    ```bash
-    cp .env.example .env
-    ```
-
-2.  **Configure Supabase:**
-    *   Create a new project on [Supabase](https://supabase.com/).
-    *   Go to **Project Settings > API**.
-    *   Copy the **Project URL** and the `anon` **public key**.
-    *   Paste them into your `.env` file:
-      ```env
-      VITE_SUPABASE_URL=your_supabase_project_url
-      VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-      ```
-
-3.  **Configure EmailJS:**
-    *   Log in to your [EmailJS](https://www.emailjs.com/) dashboard.
-    *   Add a new email service (e.g., Gmail).
-    *   Create two email templates: one for OTPs and one for emergency alerts. The templates must accept the variables defined in `src/utils/email.ts`.
-    *   Find your **Service ID**, **Template IDs**, and **Public Key** and add them to your `.env` file.
-
-### 4. Database Setup
-
-1.  In your Supabase project dashboard, navigate to the **SQL Editor**.
-2.  You must create the `profiles`, `otps`, and `access_logs` tables. The required SQL commands to define the schema can be inferred from the application's data structures and diagnostic scripts.
-3.  **Crucially**, disable the **Confirm email** feature in Supabase for the custom OTP flow to work correctly. Go to **Authentication > Providers > Email** and turn off the "Confirm email" toggle.
-
-### 5. Run the Application
-
-1.  **Start the development server:**
-    ```bash
-    npm run dev
-    ```
-    The application will be available at `http://localhost:5173`.
-
-2.  **Run the Supabase diagnostic script (optional):**
-    To verify your database connection and table setup, run:
-    ```bash
-    node check-supabase.mjs
-    ```
-
-## Available Scripts
-
-*   `npm run dev`: Starts the Vite development server with Hot Module Replacement.
-*   `npm run build`: Compiles the TypeScript code and builds the application for production.
-*   `npm run lint`: Runs ESLint to analyze the code for potential errors.
-*   `npm run preview`: Starts a local server to preview the production build.
+---
+*Developed with a focus on reliability and speed in medical emergency scenarios.*
