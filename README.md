@@ -3,7 +3,7 @@
 MediScan is a professional web application designed to provide instant access to critical medical information during emergencies. By scanning a unique QR code, first responders can retrieve a linked medical profile stored securely in a Supabase database. The application also features an integrated emergency SOS alert for rapid data access.
 
 ### 🔗 Live Demo
-[View Live Demo](https://mediscan-demo.vercel.app/) *(Placeholder)*
+[View Live Demo](https://mediscan-delta.vercel.app)
 
 ### 🚀 Features
 - **QR Code Scanning**: Instant retrieval of linked medical data via unique QR codes.
@@ -35,7 +35,11 @@ mediscan/
 ```
 
 ### 📸 Screenshots
-*(Screenshot placeholder: Dashboard and QR Scan View)*
+![Dashboard](screenshots/dashboard.png)
+*User Dashboard with QR Code and SOS Controls*
+
+![Medical Profile](screenshots/profile.png)
+*Detailed Medical Profile with Emergency Contacts*
 
 ### ⚙️ Setup Instructions
 To run this project locally, follow these steps:
@@ -62,8 +66,8 @@ To run this project locally, follow these steps:
 ### 🔑 Environment Variables
 The application requires the following Supabase credentials:
 ```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=https://xbsyleowkfgabuqkvked.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhic3lsZW93a2ZnYWJ1cWt2a2VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MjY4NjgsImV4cCI6MjA1Nzk5Mjg2OH0.98322z371Y889k0l4l512891289128912891289
 ```
 
 ### 🔍 How It Works
@@ -85,4 +89,4 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - **Wearable Integration**: Linking with smartwatches for automated SOS triggers.
 
 ### ✍️ Author
-[Biyaliz Abraham](https://github.com/biyalizabraham08)
+[Biya Liza Abraham](https://github.com/biyalizabraham08)
