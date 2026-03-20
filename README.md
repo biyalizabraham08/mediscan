@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/favicon.svg" width="128" alt="MediScan Logo" />
+  <img src="web_backup/public/favicon.svg" width="128" alt="MediScan Logo" />
   <h1>MediScan</h1>
   <p><i>Emergency Medical ID System</i></p>
 
@@ -79,6 +79,13 @@ Create a `.env` file in the root for the Mobile app and in `web_backup/` for the
 
 ### ⚠️ Disclaimer
 MediScan is a technical demonstration and is **not** a production-grade medical record system. It has not undergone clinical auditing or regulatory compliance (e.g., HIPAA). All medical data is user-reported and should be verified by authorized personnel.
+
+### 📸 Screenshots
+![Dashboard](web_backup/screenshots/dashboard.png)
+*User Dashboard with QR Code and SOS Controls*
+
+![Medical Profile](web_backup/screenshots/profile.png)
+*Emergency Profile View with Contact Integration*
 
 ### ✍️ Author
 [Biya Liza Abraham](https://github.com/biyalizabraham08)
